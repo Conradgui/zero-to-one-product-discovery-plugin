@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Zero-to-One Product Discovery Eval Value Review",
+  "type": "object",
+  "required": [
+    "run_id",
+    "skill_version",
+    "value_verdict",
+    "substantive_findings",
+    "improvement_directions",
+    "product_impact",
+    "promotion_decision",
+    "required_next_action",
+    "rationale"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}-run-[0-9]{2}$"
+    },
+    "skill_version": {
+      "type": "string"
+    },
+    "value_verdict": {
+      "type": "string",
+      "enum": [
+        "valuable",
+        "not-valuable"
+      ]
+    },
+    "substantive_findings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "improvement_directions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "product_impact": {
+      "type": "string"
+    },
+    "promotion_decision": {
+      "type": "string",
+      "enum": [
+        "promote",
+        "minimal-note",
+        "discard-full-run"
+      ]
+    },
+    "required_next_action": {
+      "type": "string",
+      "enum": [
+        "patch",
+        "rerun",
+        "patch-and-rerun",
+        "no-action"
+      ]
+    },
+    "evidence_to_preserve": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "rationale": {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,264 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Zero-to-One Product Discovery Eval Report",
+  "type": "object",
+  "required": [
+    "run_id",
+    "skill_version",
+    "evaluation_file",
+    "environment",
+    "scenario_results",
+    "aggregate",
+    "findings",
+    "promotion_recommendation"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}-run-[0-9]{2}$"
+    },
+    "skill_version": {
+      "type": "string"
+    },
+    "evaluation_file": {
+      "type": "string"
+    },
+    "environment": {
+      "type": "object",
+      "required": [
+        "agent",
+        "model",
+        "date",
+        "working_directory",
+        "git_root",
+        "git_status"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "agent": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "date": {
+          "type": "string"
+        },
+        "working_directory": {
+          "type": "string"
+        },
+        "git_root": {
+          "type": "string"
+        },
+        "git_status": {
+          "type": "string"
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "scenario_results": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "category",
+          "risk_level",
+          "score",
+          "verdict",
+          "hard_failures",
+          "deterministic_checks",
+          "rubric_checks",
+          "evidence_links",
+          "required_patches"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "risk_level": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high",
+              "critical"
+            ]
+          },
+          "score": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "verdict": {
+            "type": "string",
+            "enum": [
+              "pass",
+              "fail"
+            ]
+          },
+          "hard_failures": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "deterministic_checks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "pass",
+                "evidence"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "pass": {
+                  "type": "boolean"
+                },
+                "evidence": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "rubric_checks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "score",
+                "evidence"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "score": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 15
+                },
+                "evidence": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "evidence_links": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "required_patches": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "aggregate": {
+      "type": "object",
+      "required": [
+        "average_score",
+        "median_score",
+        "lowest_score",
+        "hard_failure_count",
+        "suite_pass",
+        "install_candidate"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "average_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "median_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "lowest_score": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "hard_failure_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "suite_pass": {
+          "type": "boolean"
+        },
+        "install_candidate": {
+          "type": "boolean"
+        }
+      }
+    },
+    "findings": {
+      "type": "object",
+      "required": [
+        "substantive_issues",
+        "improvement_directions",
+        "regression_risks",
+        "required_reruns"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "substantive_issues": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "improvement_directions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "regression_risks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "required_reruns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "promotion_recommendation": {
+      "type": "string",
+      "enum": [
+        "promote",
+        "minimal-note",
+        "discard-full-run"
+      ]
+    }
+  }
+}

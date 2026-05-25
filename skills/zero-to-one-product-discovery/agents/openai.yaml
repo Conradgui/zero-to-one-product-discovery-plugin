@@ -1,0 +1,6 @@
+interface:
+  display_name: "Zero-to-One Product Discovery"
+  short_description: "Orchestrate early product discovery with stage gates, specialist producers, and audit checks before coding"
+  default_prompt: "Use $zero-to-one-product-discovery as the main workflow to explore this early product idea, preserve stage gates, use producer agents only when grounded, and audit substantial artifacts before implementation planning."
+policy:
+  allow_implicit_invocation: true

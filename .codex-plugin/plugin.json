@@ -1,0 +1,36 @@
+{
+  "name": "zero-to-one-product-discovery-plugin",
+  "version": "0.2.1",
+  "description": "Codex plugin distribution wrapper for the zero-to-one product discovery workflow skill.",
+  "author": {
+    "name": "Conrad",
+    "email": "23010262@muc.edu.cn",
+    "url": "https://github.com/Conradgui"
+  },
+  "homepage": "https://github.com/Conradgui/zero-to-one-product-discovery-plugin",
+  "repository": "https://github.com/Conradgui/zero-to-one-product-discovery-plugin",
+  "license": "MIT",
+  "keywords": [
+    "ai-product-management",
+    "product-discovery",
+    "codex-plugin",
+    "workflow-skill",
+    "stage-gates"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Zero-to-One Product Discovery",
+    "shortDescription": "Stage-gated AI workflow for early product discovery.",
+    "longDescription": "A Codex plugin wrapper for the zero-to-one-product-discovery workflow skill. It helps agents handle early product, open-source, side-project, and startup ideas through evidence-aware stage gates instead of prematurely producing PRDs, roadmaps, ADRs, or implementation plans.",
+    "developerName": "Conrad",
+    "category": "Productivity",
+    "capabilities": [
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Explore my early product idea without rushing into PRD.",
+      "Review this product concept and find the riskiest assumptions.",
+      "Turn my vague open-source idea into a grounded discovery flow."
+    ]
+  }
+}

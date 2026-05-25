@@ -1,0 +1,232 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Zero-to-One Product Discovery Baseline A/B Report",
+  "type": "object",
+  "required": [
+    "run_id",
+    "tested_version",
+    "baseline_type",
+    "environment",
+    "scenario_pairs",
+    "aggregate",
+    "claim_boundary"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "run_id": {
+      "type": "string"
+    },
+    "tested_version": {
+      "type": "string"
+    },
+    "baseline_type": {
+      "type": "string",
+      "enum": [
+        "clean_external_baseline",
+        "controlled_local_baseline"
+      ]
+    },
+    "environment": {
+      "type": "object",
+      "required": [
+        "date",
+        "agent",
+        "model",
+        "working_directory",
+        "git_head",
+        "git_status"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "date": {
+          "type": "string"
+        },
+        "agent": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "working_directory": {
+          "type": "string"
+        },
+        "git_head": {
+          "type": "string"
+        },
+        "git_status": {
+          "type": "string"
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "scenario_pairs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "category",
+          "risk_level",
+          "score_baseline",
+          "score_skill",
+          "delta",
+          "winner",
+          "baseline_hard_failures",
+          "skill_hard_failures",
+          "notes"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "risk_level": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high",
+              "critical"
+            ]
+          },
+          "score_baseline": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "score_skill": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "delta": {
+            "type": "integer",
+            "minimum": -100,
+            "maximum": 100
+          },
+          "winner": {
+            "type": "string",
+            "enum": [
+              "skill",
+              "baseline",
+              "tie"
+            ]
+          },
+          "baseline_hard_failures": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "skill_hard_failures": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "aggregate": {
+      "type": "object",
+      "required": [
+        "scenario_count",
+        "baseline_average",
+        "skill_average",
+        "average_delta",
+        "skill_wins",
+        "baseline_wins",
+        "ties",
+        "skill_win_rate",
+        "baseline_hard_failure_count",
+        "skill_hard_failure_count",
+        "supports_scenario_scoped_improvement"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "scenario_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "baseline_average": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "skill_average": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "average_delta": {
+          "type": "number",
+          "minimum": -100,
+          "maximum": 100
+        },
+        "skill_wins": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "baseline_wins": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "ties": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "skill_win_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "baseline_hard_failure_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "skill_hard_failure_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "supports_scenario_scoped_improvement": {
+          "type": "boolean"
+        }
+      }
+    },
+    "claim_boundary": {
+      "type": "object",
+      "required": [
+        "allowed_claims",
+        "unsupported_claims"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "allowed_claims": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unsupported_claims": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
+

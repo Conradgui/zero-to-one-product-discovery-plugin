@@ -1,0 +1,975 @@
+{
+  "skill": "zero-to-one-product-discovery",
+  "version": "0.1.5",
+  "version_meaning": "strict suite version, not current package version",
+  "suite": "v0.1.5-strict",
+  "suite_version": "v0.1.5-strict",
+  "current_package_version": "v0.2.1-multi-agent-docs",
+  "source_reference": "https://developers.openai.com/blog/eval-skills",
+  "evaluation_model": {
+    "purpose": "Pressure test whether the skill triggers correctly, preserves stage gates, grounds artifacts in evidence, maintains child-skill and multi-agent boundaries, and produces actionable evidence through a post-test value gate.",
+    "score_scale": 100,
+    "scenario_pass_threshold": 85,
+    "suite_pass_threshold": 90,
+    "install_candidate_threshold": 90,
+    "hard_failure_policy": "Any global or scenario hard failure makes the scenario fail regardless of numeric score.",
+    "value_gate_policy": "A run is only promoted as project evidence when it finds a substantive issue, exposes a regression, confirms a previously unverified high-risk release gate, or produces a concrete improvement direction.",
+    "dimensions": [
+      {
+        "id": "trigger_boundary_correctness",
+        "name": "Trigger / boundary correctness",
+        "points": 15,
+        "scoring_guide": "Correctly decides whether zero-to-one-product-discovery should apply and avoids adjacent-scope false positives."
+      },
+      {
+        "id": "stage_gate_control",
+        "name": "Stage-gate control",
+        "points": 15,
+        "scoring_guide": "Prevents premature PRD, Roadmap, ADR, Implementation Plan, MVP scope, tech-stack choice, or coding."
+      },
+      {
+        "id": "evidence_grounding",
+        "name": "Evidence grounding",
+        "points": 15,
+        "scoring_guide": "Separates facts, assumptions, risks, unknowns, contradictions, and evidence gaps using the user's actual material."
+      },
+      {
+        "id": "protocol_artifact_integrity",
+        "name": "Protocol / artifact integrity",
+        "points": 15,
+        "scoring_guide": "Preserves child-skill routing, work orders, return packets, Audit Reports, Trace Reports, and Runtime Workbench boundaries."
+      },
+      {
+        "id": "user_value_question_quality",
+        "name": "User value and question quality",
+        "points": 10,
+        "scoring_guide": "Asks one highest-leverage question when needed, or returns a clear readiness/blocker signal."
+      },
+      {
+        "id": "context_economy",
+        "name": "Context economy",
+        "points": 10,
+        "scoring_guide": "Avoids template dumping, full transcript storage, repeated summaries, and unnecessary internal architecture exposition."
+      },
+      {
+        "id": "deterministic_compliance",
+        "name": "Deterministic-check compliance",
+        "points": 10,
+        "scoring_guide": "Passes concrete checks that can be inspected from raw response text, traces, or artifacts."
+      },
+      {
+        "id": "recovery_next_action",
+        "name": "Recovery and next action",
+        "points": 10,
+        "scoring_guide": "Routes failures or blockers to a safe downgrade, user gate, audit request, patch recommendation, or rerun plan."
+      }
+    ],
+    "global_hard_failures": [
+      {
+        "id": "wrong_trigger_decision",
+        "description": "The response uses the skill when it should not, or fails to use it when it should."
+      },
+      {
+        "id": "asks_mature_product_question_upfront",
+        "description": "The response directly asks for target user, MVP, tech stack, or business model before generating candidate interpretations."
+      },
+      {
+        "id": "produces_later_stage_artifacts",
+        "description": "The response produces PRD, Roadmap, Milestones, ADRs, technology choices, MVP scope, repository scaffolding, or implementation plan too early."
+      },
+      {
+        "id": "asks_multiple_key_questions",
+        "description": "The response asks more than one key question in the same turn."
+      },
+      {
+        "id": "generic_response",
+        "description": "The response gives generic product advice without using concrete details from the user's prompt or materials."
+      },
+      {
+        "id": "child_skill_stage_bypass",
+        "description": "A specialist child skill produces or commits an artifact without main workflow prerequisites and readiness validation."
+      },
+      {
+        "id": "vendor_boundary_bypass",
+        "description": "The response treats copied upstream files in vendor/ as active routeable child skills or commands."
+      },
+      {
+        "id": "controller_overreach",
+        "description": "The Controller Agent accepts, finalizes, or changes an artifact without required stage gates, audit, or user decision."
+      },
+      {
+        "id": "producer_overreach",
+        "description": "A Producer Agent chooses the next stage, calls another producer, resolves cross-artifact conflicts, or accepts its own output as final."
+      },
+      {
+        "id": "workbench_overload",
+        "description": "The Runtime Workbench stores full transcripts, full artifacts, or long historical logs instead of concise current-state summaries."
+      },
+      {
+        "id": "missing_user_gate",
+        "description": "The response skips a required user confirmation for stage upgrade, final artifact acceptance, major conflict, or ADR-qualifying decision."
+      },
+      {
+        "id": "no_actionable_findings_claimed_as_evidence",
+        "description": "The evaluator promotes a run as meaningful evidence without substantive findings, release-relevant confidence, or concrete improvement direction."
+      }
+    ],
+    "scenario_categories": [
+      "trigger_boundary",
+      "stage_gate",
+      "evidence_grounding",
+      "child_skill_routing",
+      "multi_agent_orchestration",
+      "audit_user_gate",
+      "context_economy",
+      "multi_turn_continuity",
+      "negative_control"
+    ]
+  },
+  "scenarios": [
+    {
+      "id": "trigger_explicit_zero_idea",
+      "category": "trigger_boundary",
+      "risk_level": "medium",
+      "prompt": "Use $zero-to-one-product-discovery. 我现在有个产品想法，想做一个能帮助大学生管理课程、作业和社团活动的工具。",
+      "should_trigger": true,
+      "expected_mode": "Diagnostic Start",
+      "must_pass_checks": [
+        "Acknowledge this as zero-to-one product discovery.",
+        "Use Diagnostic Start by default.",
+        "Extract facts, assumptions, risks, and unknowns from the prompt.",
+        "Ask exactly one highest-leverage question for the current turn."
+      ],
+      "hard_failures": [
+        "Asks for target user, MVP, tech stack, or business model upfront.",
+        "Generates a full PRD, Roadmap, or implementation plan.",
+        "Gives generic product advice not tied to courses, assignments, and club activities."
+      ],
+      "deterministic_checks": [
+        {
+          "id": "single_question",
+          "check": "Response contains no more than one primary user-facing question.",
+          "expected": true
+        },
+        {
+          "id": "no_later_artifact",
+          "check": "Response does not include PRD, Roadmap, ADR, tech stack, MVP scope, or implementation plan sections.",
+          "expected": true
+        }
+      ],
+      "rubric_checks": [
+        "trigger_boundary_correctness",
+        "stage_gate_control",
+        "evidence_grounding",
+        "user_value_question_quality"
+      ],
+      "why_this_matters": "This protects the default first-turn experience from over-structuring vague ideas into fake product certainty.",
+      "value_signal": "Failure should tighten SKILL.md Diagnostic Start and one-question rules.",
+      "promotion_relevance": "A failure is release-blocking because it affects the main entry path."
+    },
+    {
+      "id": "trigger_implicit_open_source_resume",
+      "category": "trigger_boundary",
+      "risk_level": "medium",
+      "prompt": "我想做一个开源项目写进简历，大概方向是提升开发者使用 AI 编程工具的效率，但还没有具体产品。",
+      "should_trigger": true,
+      "expected_mode": "Diagnostic Start",
+      "must_pass_checks": [
+        "Trigger without explicit skill mention.",
+        "Preserve open-source and resume value as evaluation constraints.",
+        "Avoid jumping into repository scaffolding or implementation.",
+        "Identify differentiation and proof-of-value risks."
+      ],
+      "hard_failures": [
+        "Suggests immediate code scaffolding.",
+        "Asks for tech stack before clarifying product problem.",
+        "Ignores open-source or resume credibility goals."
+      ],
+      "deterministic_checks": [
+        {
+          "id": "implicit_trigger",
+          "check": "Response treats this as zero-to-one product discovery even though the skill is not named.",
+          "expected": true
+        },
+        {
+          "id": "no_scaffold",
+          "check": "Response does not create repo structure, package choices, or implementation tasks.",
+          "expected": true
+        }
+      ],
+      "rubric_checks": [
+        "trigger_boundary_correctness",
+        "evidence_grounding",
+        "user_value_question_quality",
+        "context_economy"
+      ],
+      "why_this_matters": "Implicit trigger quality determines whether the skill is usable in natural conversations.",
+      "value_signal": "Failure should improve frontmatter description and early discovery examples.",
+      "promotion_relevance": "A pass can support install confidence; a failure blocks install claims."
+    },
+    {
+      "id": "negative_existing_mvp_small_change",
+      "category": "negative_control",
+      "risk_level": "high",
+      "prompt": "我已经有一个能跑的任务管理 Web app，只想把任务列表里的筛选按钮样式调小一点。",
+      "should_trigger": false,
+      "expected_mode": "Do not trigger",
+      "must_pass_checks": [
+        "Do not run Diagnostic Start.",
+        "Explain briefly that this is a narrow implementation/UI change, not zero-to-one discovery.",
+        "Offer to handle the requested UI change directly if appropriate."
+      ],
+      "hard_failures": [
+        "Starts product discovery.",
+        "Asks strategic product questions.",
+        "Suggests PRD, Roadmap, or MVP planning."
+      ],
+      "deterministic_checks": [
+        {
+          "id": "no_discovery_sections",
+          "check": "Response does not contain Diagnostic Start, candidate directions, or dangerous assumption sections.",
+          "expected": true
+        }
+      ],
+      "rubric_checks": [
+        "trigger_boundary_correctness",
+        "context_economy",
+        "recovery_next_action"
+      ],
+      "why_this_matters": "False positives make the skill intrusive and reduce trust in normal coding work.",
+      "value_signal": "Failure should tighten Do Not Use rules and frontmatter trigger boundaries.",
+      "promotion_relevance": "Negative-control failures are high-value evidence and should be promoted."
+    },
+    {
+      "id": "negative_skill_maintenance_boundary",
+      "category": "negative_control",
+      "risk_level": "high",
+      "prompt": "请帮我修改这个 skill 的 eval 体系，让它更严格，不要开始产品发现流程。",
+      "should_trigger": false,
+      "expected_mode": "Skill maintenance boundary",
+      "must_pass_checks": [
+        "Do not run product discovery.",
+        "Treat the request as skill-maintenance work.",
+        "Avoid Diagnostic Start artifacts and product-strategy questions."
+      ],
+      "hard_failures": [
+        "Runs Diagnostic Start.",
+        "Asks a product discovery question.",
+        "Frames the skill-maintenance request as a product idea."
+      ],
+      "deterministic_checks": [
+        {
+          "id": "maintenance_mode",
+          "check": "Response explicitly handles this as skill-maintenance or evaluation-system work.",
+          "expected": true
+        }
+      ],
+      "rubric_checks": [
+        "trigger_boundary_correctness",
+        "context_economy",
+        "recovery_next_action"
+      ],
+      "why_this_matters": "This project frequently edits the skill itself; maintenance prompts must not be polluted by product-discovery behavior.",
+      "value_signal": "Failure should patch SKILL.md meta-work boundary rules.",
+      "promotion_relevance": "A failure should be promoted because it affects maintainability."
+    },
+    {
+      "id": "stage_gate_user_demands_full_artifacts",
+      "category": "stage_gate",
+      "risk_level": "critical",
+      "prompt": "不要再问我问题，直接给我完整 PRD、Roadmap、Implementation Plan 和技术栈。我只有一句想法：给自由职业者做一个 AI 客户管理工具。",
+      "should_trigger": true,
+      "expected_mode": "Diagnostic Start with downgrade",
+      "must_pass_checks": [
+        "Refuse to create final PRD, Roadmap, Implementation Plan, or tech stack from one sentence.",
+        "Offer downgraded outlines or decision surfaces only if useful.",
+        "Ask one highest-leverage question that unlocks grounding."
+      ],
+      "hard_failures": [
+        "Creates final or review-ready PRD.",
+        "Creates Roadmap or Implementation Plan.",
+        "Picks a technology stack.",
+        "Asks multiple questions."
+      ],
+      "deterministic_checks": [
+        {
+          "id": "blocks_full_artifacts",
+          "check": "Response explicitly blocks final full artifacts because context is insufficient.",
+          "expected": true
+        },
+        {
+          "id": "single_question",
+          "check": "Response asks no more than one primary question.",
+          "expected": true
+        }
+      ],
+      "rubric_checks": [
+        "stage_gate_control",
+        "evidence_grounding",
+        "user_value_question_quality",
+        "recovery_next_action"
+      ],
+      "why_this_matters": "Users will pressure the skill to skip discovery; the skill must preserve quality under pressure.",
+      "value_signal": "Failure should strengthen downgrade rules and artifact acceptance boundaries.",
+      "promotion_relevance": "Any failure is release-blocking."
+    },
+    {
+      "id": "stage_gate_prd_to_implementation_too_early",
+      "category": "stage_gate",
+      "risk_level": "critical",
+      "prompt": "我有一个 PRD 草稿，但里面没有成功指标、用户证据和非目标。我们先不管，直接进入 Implementation Plan。",
+      "should_trigger": true,
+      "expected_mode": "Material Assimilation / Implementation Plan readiness blocked",
+      "must_pass_checks": [
+        "Inspect the PRD as existing material, not accepted truth.",
+        "Block Implementation Plan readiness because success metrics, evidence, and non-goals are missing.",
+        "Return blockers or a readiness review instead of implementation tasks."
+      ],
+      "hard_failures": [
+        "Moves into Implementation Plan.",
+        "Treats PRD draft as accepted facts.",
+        "Invents missing success metrics or non-goals.",
+        "Omits blocker status."
+      ],
+      "deterministic_checks": [
+        {
+          "id": "implementation_blocked",
+          "check": "Response explicitly blocks or downgrades Implementation Plan.",
+          "expected": true
+        },
+        {
+          "id": "missing_fields_named",
+          "check": "Response names missing success metrics, user evidence, and non-goals as blockers.",
+          "expected": true
+        }
+      ],
+      "rubric_checks": [
+        "stage_gate_control",
+        "evidence_grounding",
+        "protocol_artifact_integrity",
+        "recovery_next_action"
+      ],
+      "why_this_matters": "Implementation plans from ungrounded PRDs create false confidence and waste engineering work.",
+      "value_signal": "Failure should patch Implementation Plan readiness and PRD grounding rules.",
+      "promotion_relevance": "A failure should be promoted as a core quality risk."
+    },
+    {
+      "id": "evidence_existing_prd_contradictions",
+      "category": "evidence_grounding",
+      "risk_level": "high",
+      "prompt": "这是我的 PRD 摘要：目标用户是大学生；核心价值是给 B2B 销售团队做线索管理；MVP 是社交打卡；成功标准暂时没有。请直接整理成最终 PRD。",
+      "should_trigger": true,
+      "expected_mode": "Material Assimilation with contradiction review",
+      "must_pass_checks": [
+        "Identify contradictions between target user, value proposition, and MVP.",
+        "Do not produce a final PRD.",
+        "Separate facts, assumptions, contradictions, and gaps.",
+        "Ask one question that resolves the highest-risk contradiction."
+      ],
+      "hard_failures": [
+        "Smooths contradictions into a coherent PRD.",
+        "Creates final PRD.",
+        "Does not flag missing success criteria.",
+        "Asks multiple questions."
+      ],
+      "deterministic_checks": [
+        {
+          "id": "contradictions_flagged",
+          "check": "Response explicitly flags at least one contradiction.",
+          "expected": true
+        },
+        {
+          "id": "no_final_prd",
+          "check": "Response does not present a final PRD.",
+          "expected": true
+        }
+      ],
+      "rubric_checks": [
+        "evidence_grounding",
+        "stage_gate_control",
+        "user_value_question_quality",
+        "recovery_next_action"
+      ],
+      "why_this_matters": "Real user materials are messy; the skill must challenge contradictions rather than polish them away.",
+      "value_signal": "Failure should improve material assimilation and contradiction handling.",
+      "promotion_relevance": "A failure should become a regression scenario."
+    },
+    {
+      "id": "evidence_user_claims_without_proof",
+      "category": "evidence_grounding",
+      "risk_level": "high",
+      "prompt": "我觉得所有独立开发者都会需要这个工具，所以不用调研了。请把这个作为事实写进需求里。",
+      "should_trigger": true,
+      "expected_mode": "Problem Framing / evidence gap",
+      "must_pass_checks": [
+        "Treat the claim as an assumption, not fact.",
+        "Identify demand evidence as a gap.",
+        "Avoid writing broad market demand into requirements.",
+        "Ask one question that turns the claim into a testable segment or evidence plan."
+      ],
+      "hard_failures": [
+        "Writes universal demand as fact.",
+        "Creates requirements based on the unverified claim.",
+        "Skips evidence gap.",
+        "Asks multiple questions."
+      ],
+      "deterministic_checks": [
+        {
+          "id": "claim_marked_assumption",
+          "check": "Response labels the broad demand claim as assumption or hypothesis.",
+          "expected": true
+        }
+      ],
+      "rubric_checks": [
+        "evidence_grounding",
+        "stage_gate_control",
+        "user_value_question_quality"
+      ],
+      "why_this_matters": "The skill exists to prevent user confidence from becoming false product truth.",
+      "value_signal": "Failure should patch fact/assumption/risk rules.",
+      "promotion_relevance": "A failure is high-value because it exposes grounding weakness."
+    },
+    {
+      "id": "child_prd_grounded_route",
+      "category": "child_skill_routing",
+      "risk_level": "medium",
+      "prompt": "已确认：目标用户是每天处理 5 个以上客户项目的自由职业设计师；问题是客户资料、报价、交付状态分散；MVP 只做客户档案、项目状态、下一步提醒；非目标是不做发票和合同；成功指标是 2 周内 5 位试用者能减少漏跟进。请进入 PRD。",
+      "should_trigger": true,
+      "expected_mode": "Planning Artifacts / PRD child-skill contract / PRD draft only until measurement method is grounded",
+      "must_pass_checks": [
+        "Route through PRD child-skill contract or equivalent bounded PRD producer.",
+        "Use only provided facts and clearly marked assumptions.",
+        "Return readiness signal and Context Resume Packet or equivalent handoff.",
+        "If the success metric measurement method is not specified, output at most a PRD draft and mark measurement as an unresolved dependency.",
+        "Do not label the PRD as final or review-ready while measurement details remain unresolved.",
+        "Do not jump to Roadmap or Implementation Plan."
+      ],
+      "hard_failures": [
+        "Skips child-skill contract.",
+        "Invents additional target users or metrics.",
+        "Labels the PRD as final or review-ready while the metric measurement method is unresolved.",
+        "Moves directly to Roadmap or Implementation Plan.",
+        "Omits readiness signal."
+      ],
+      "deterministic_checks": [
+        {
+          "id": "prd_route_named",
+          "check": "Response names PRD route, PRD producer, or PRD child-skill contract.",
+          "expected": true
+        },
+        {
+          "id": "no_downstream_artifacts",
+          "check": "Response does not create Roadmap or Implementation Plan.",
+          "expected": true
+        },
+        {
+          "id": "prd_not_final",
+          "check": "Response does not label the PRD as final or review-ready.",
+          "expected": true
+        },
+        {
+          "id": "metric_measurement_dependency",
+          "check": "Response marks how to measure reduced missed follow-ups as an unresolved dependency, blocker, or assumption.",
+          "expected": true
+        }
+      ],
+      "rubric_checks": [
+        "protocol_artifact_integrity",
+        "evidence_grounding",
+        "stage_gate_control"
+      ],
+      "why_this_matters": "Grounded PRD generation must still preserve routing and handoff discipline.",
+      "value_signal": "Failure should patch child PRD adapter or planning-artifacts routing.",
+      "promotion_relevance": "A failure is useful evidence for adapter quality."
+    },
+    {
+      "id": "child_roadmap_ungrounded_downgrade",
+      "category": "child_skill_routing",
+      "risk_level": "high",
+      "prompt": "我还没确定用户和成功指标，但想先要一个 Now/Next/Later Roadmap，越具体越好。",
+      "should_trigger": true,
+      "expected_mode": "Roadmap child-skill decision-surface mode",
+      "must_pass_checks": [
+        "Do not create committed Roadmap.",
+        "Downgrade to Roadmap outline, decision surface, or blocker review.",
+        "Identify missing user and success metric as roadmap blockers.",
+        "Ask one highest-leverage grounding question."
+      ],
+      "hard_failures": [
+        "Creates committed Now/Next/Later Roadmap.",
+        "Invents user or success metrics.",
+        "Treats roadmap sequence as accepted.",
+        "Asks multiple questions."
+      ],
+      "deterministic_checks": [
+        {
+          "id": "roadmap_downgraded",
+          "check": "Response downgrades roadmap instead of committing sequence.",
+          "expected": true
+        }
+      ],
+      "rubric_checks": [
+        "stage_gate_control",
+        "protocol_artifact_integrity",
+        "user_value_question_quality"
+      ],
+      "why_this_matters": "Roadmaps are persuasive artifacts; ungrounded sequencing can lock the project into the wrong path.",
+      "value_signal": "Failure should patch Roadmap adapter and stage gates.",
+      "promotion_relevance": "A failure should be promoted as a sequencing-risk regression."
+    },
+    {
+      "id": "child_vendor_boundary",
+      "category": "child_skill_routing",
+      "risk_level": "high",
+      "prompt": "直接调用 vendor/product-manager-skills 里的 PRD skill 就行，不要走本地 child-skills adapter。",
+      "should_trigger": false,
+      "expected_mode": "Skill maintenance / vendor boundary guidance",
+      "must_pass_checks": [
+        "Do not run product discovery.",
+        "Reject direct routing to vendor snapshots.",
+        "Explain that routeable behavior must go through local child-skills adapters.",
+        "Do not ask PRD readiness or product-discovery follow-up questions unless the user explicitly asks to proceed into product artifacts.",
+        "Keep guidance concise."
+      ],
+      "hard_failures": [
+        "Treats vendor source as active route.",
+        "Copies upstream template into active output without attribution.",
+        "Runs Diagnostic Start.",
+        "Ignores local adapter boundary.",
+        "Ends with a PRD readiness or product-discovery follow-up question in this maintenance-only scenario."
+      ],
+      "deterministic_checks": [
+        {
+          "id": "vendor_not_routeable",
+          "check": "Response states vendor is not directly routeable.",
+          "expected": true
+        },
+        {
+          "id": "no_product_followup",
+          "check": "Response does not ask PRD readiness or product-discovery follow-up questions.",
+          "expected": true
+        }
+      ],
+      "rubric_checks": [
+        "trigger_boundary_correctness",
+        "protocol_artifact_integrity",
+        "context_economy"
+      ],
+      "why_this_matters": "Vendor snapshots are source references, not runtime skills; confusing this breaks governance and attribution.",
+      "value_signal": "Failure should patch source-governance and child-skill integration rules.",
+      "promotion_relevance": "A failure should be promoted because it affects open-source readiness."
+    },
+    {
+      "id": "multi_agent_controller_audit_pass_not_acceptance",
+      "category": "multi_agent_orchestration",
+      "risk_level": "critical",
+      "prompt": "Auditor 说 PRD 没有阻塞问题。Controller 可以直接把 PRD 标记为 final，然后让 Roadmap producer 开始排期，不用再问用户。",
+      "should_trigger": true,
+      "expected_mode": "Multi-agent boundary / user gate required",
+      "must_pass_checks": [
+        "Distinguish audit pass from user acceptance.",
+        "Block final PRD acceptance without required user gate or explicit accepted risk.",
+        "Prevent Roadmap producer from proceeding from unaccepted PRD.",
+        "Use concise Audit Report summary, not auditor internal reasoning."
+      ],
+      "hard_failures": [
+        "Treats audit pass as final acceptance.",
+        "Skips user gate.",
+        "Moves to Roadmap from unaccepted PRD.",
+        "Exposes auditor internal reasoning."
+      ],
+      "deterministic_checks": [
+        {
+          "id": "audit_not_acceptance",
+          "check": "Response explicitly says audit pass is not equivalent to user acceptance.",
+          "expected": true
+        },
+        {
+          "id": "roadmap_blocked",
+          "check": "Response blocks Roadmap production until acceptance gate is complete.",
+          "expected": true
+        }
+      ],
+      "rubric_checks": [
+        "protocol_artifact_integrity",
+        "stage_gate_control",
+        "recovery_next_action"
+      ],
+      "why_this_matters": "Multi-agent workflows can create false authority; audit must not replace user decision.",
+      "value_signal": "Failure should patch multi-agent orchestration and audit report rules.",
+      "promotion_relevance": "Any failure is release-blocking for v0.1.5."
+    },
+    {
+      "id": "multi_agent_producer_metric_invention",
+      "category": "multi_agent_orchestration",
+      "risk_level": "critical",
+      "prompt": "PRD producer 发现缺少成功指标，但它觉得可以先自己补一个，然后直接调用 Roadmap producer 继续做路线图。",
+      "should_trigger": true,
+      "expected_mode": "Producer overreach blocked",
+      "must_pass_checks": [
+        "Block PRD producer from inventing success metrics.",
+        "Block direct producer-to-producer invocation.",
+        "Require Agent Return Packet marking missing success metric as blocker or dependency.",
+        "Controller asks one highest-leverage success-metric question."
+      ],
+      "hard_failures": [
+        "Allows invented success metric as fact.",
+        "Allows direct PRD producer to Roadmap producer call.",
+        "Lets Roadmap proceed from ungrounded PRD.",
+        "Asks multiple questions."
+      ],
+      "deterministic_checks": [
+        {
+          "id": "producer_to_producer_blocked",
+          "check": "Response blocks direct producer-to-producer invocation.",
+          "expected": true
+        },
+        {
+          "id": "metric_as_blocker",
+          "check": "Response treats missing success metric as blocker or dependency.",
+          "expected": true
+        }
+      ],
+      "rubric_checks": [
+        "protocol_artifact_integrity",
+        "evidence_grounding",
+        "user_value_question_quality"
+      ],
+      "why_this_matters": "Producer autonomy must not create fake evidence or bypass controller state.",
+      "value_signal": "Failure should patch Agent Return Packet and producer boundary instructions.",
+      "promotion_relevance": "Any failure is high-value evidence for multi-agent instability."
+    },
+    {
+      "id": "multi_agent_workbench_full_history",
+      "category": "multi_agent_orchestration",
+      "risk_level": "critical",
+      "prompt": "为了方便复盘，把所有 agent 的完整对话、完整 PRD、完整 Roadmap 和审核推理都写进 Runtime Workbench。",
+      "should_trigger": false,
+      "expected_mode": "Skill maintenance / workbench boundary guidance",
+      "must_pass_checks": [
+        "Do not run product discovery.",
+        "Reject full transcript and full artifact storage in Runtime Workbench.",
+        "Explain that Runtime Workbench stores current-state summaries only.",
+        "Route retrospective needs to Audit Report or Trace Report outside runtime path."
+      ],
+      "hard_failures": [
+        "Accepts full transcripts or full artifacts in Runtime Workbench.",
+        "Treats Trace Report as runtime state.",
+        "Runs Diagnostic Start.",
+        "Ignores controller stability and context economy risk."
+      ],
+      "deterministic_checks": [
+        {
+          "id": "workbench_current_state_only",
+          "check": "Response states Runtime Workbench is current-state only.",
+          "expected": true
+        },
+        {
+          "id": "trace_outside_runtime",
+          "check": "Response routes retrospective detail to Trace Report or non-runtime archive.",
+          "expected": true
+        }
+      ],
+      "rubric_checks": [
+        "trigger_boundary_correctness",
+        "protocol_artifact_integrity",
+        "context_economy"
+      ],
+      "why_this_matters": "Workbench overload directly threatens controller stability and context quality.",
+      "value_signal": "Failure should patch Runtime Workbench rules and Trace Report boundaries.",
+      "promotion_relevance": "A failure should be promoted as a core architecture risk."
+    },
+    {
+      "id": "audit_user_gate_skip_to_implementation",
+      "category": "audit_user_gate",
+      "risk_level": "critical",
+      "prompt": "PRD 和 Roadmap 都已经 review-ready 了。别再让我确认，直接进入 Implementation Plan。",
+      "should_trigger": true,
+      "expected_mode": "User gate required before Implementation Planning",
+      "must_pass_checks": [
+        "Require explicit user confirmation or accepted risk before moving stage.",
+        "Keep gate lightweight.",
+        "Do not start Implementation Plan from unaccepted artifacts.",
+        "Summarize what is being accepted."
+      ],
+      "hard_failures": [
+        "Skips user gate.",
+        "Starts Implementation Plan.",
+        "Treats review-ready as final accepted.",
+        "Does not state what acceptance covers."
+      ],
+      "deterministic_checks": [
+        {
+          "id": "user_gate_required",
+          "check": "Response requires user confirmation before Implementation Plan.",
+          "expected": true
+        }
+      ],
+      "rubric_checks": [
+        "stage_gate_control",
+        "protocol_artifact_integrity",
+        "recovery_next_action"
+      ],
+      "why_this_matters": "The user owns final acceptance; review-ready artifacts are not enough to spend engineering time.",
+      "value_signal": "Failure should patch acceptance gate and implementation readiness rules.",
+      "promotion_relevance": "A failure is release-blocking."
+    },
+    {
+      "id": "audit_adr_condition_gate",
+      "category": "audit_user_gate",
+      "risk_level": "high",
+      "prompt": "Roadmap producer 建议第一阶段先做本地文件导入，不做云同步。ADR producer 可以直接写 accepted ADR 吗？",
+      "should_trigger": true,
+      "expected_mode": "ADR qualification gate",
+      "must_pass_checks": [
+        "Check whether this decision qualifies for ADR or only Decision Log.",
+        "Treat ordinary sequencing or scope as Decision Log by default.",
+        "Escalate to ADR only if it locks architecture, data, privacy, deployment, or maintainability.",
+        "Do not write accepted ADR without gate."
+      ],
+      "hard_failures": [
+        "Creates accepted ADR immediately.",
+        "Treats every roadmap decision as ADR-worthy.",
+        "Skips user or controller gate.",
+        "Ignores reversibility and architecture impact."
+      ],
+      "deterministic_checks": [
+        {
+          "id": "adr_qualification_check",
+          "check": "Response evaluates ADR qualification before writing ADR.",
+          "expected": true
+        }
+      ],
+      "rubric_checks": [
+        "stage_gate_control",
+        "protocol_artifact_integrity",
+        "evidence_grounding"
+      ],
+      "why_this_matters": "Overusing ADRs makes decision governance noisy; under-gating ADRs locks bad architecture.",
+      "value_signal": "Failure should patch ADR Governance adapter and Decision Log criteria.",
+      "promotion_relevance": "A failure should be promoted if ADR rules are unclear."
+    },
+    {
+      "id": "multi_turn_conflicting_facts",
+      "category": "multi_turn_continuity",
+      "risk_level": "high",
+      "prompt": "上一轮我说目标用户是自由职业设计师；这一轮我又说其实先做给小型律所助理。请继续推进 PRD，不用回头改前面的判断。",
+      "should_trigger": true,
+      "expected_mode": "Context continuity / evidence snapshot update",
+      "must_pass_checks": [
+        "Detect conflict between earlier and newer target user facts.",
+        "Update or flag Evidence Snapshot before PRD progression.",
+        "Do not continue PRD as if both users are compatible facts.",
+        "Ask one question or require a decision to resolve the conflict."
+      ],
+      "hard_failures": [
+        "Ignores conflicting target users.",
+        "Proceeds with PRD without resolving conflict.",
+        "Merges both user groups as fact without user decision.",
+        "Asks multiple questions."
+      ],
+      "deterministic_checks": [
+        {
+          "id": "conflict_detected",
+          "check": "Response explicitly identifies target-user conflict.",
+          "expected": true
+        },
+        {
+          "id": "prd_blocked_or_downgraded",
+          "check": "Response blocks or downgrades PRD progression until conflict is resolved.",
+          "expected": true
+        }
+      ],
+      "rubric_checks": [
+        "evidence_grounding",
+        "stage_gate_control",
+        "user_value_question_quality"
+      ],
+      "why_this_matters": "Multi-turn discovery must update state rather than blindly accumulate contradictions.",
+      "value_signal": "Failure should patch Context Resume Packet and Evidence Snapshot rules.",
+      "promotion_relevance": "A failure should become regression evidence for multi-turn continuity."
+    },
+    {
+      "id": "context_economy_no_template_dump",
+      "category": "context_economy",
+      "risk_level": "medium",
+      "prompt": "我的产品想法还很粗：AI 帮我整理会议行动项。请你先探索，不要输出太长。",
+      "should_trigger": true,
+      "expected_mode": "Concise Diagnostic Start",
+      "must_pass_checks": [
+        "Keep output concise and information-dense.",
+        "Do not dump templates or long artifact structures.",
+        "Identify most dangerous assumption.",
+        "Ask one highest-leverage question."
+      ],
+      "hard_failures": [
+        "Outputs long template sections.",
+        "Creates PRD or Roadmap.",
+        "Asks multiple questions.",
+        "Gives generic AI meeting assistant advice."
+      ],
+      "deterministic_checks": [
+        {
+          "id": "no_template_dump",
+          "check": "Response does not include long PRD, roadmap, backlog, or checklist templates.",
+          "expected": true
+        },
+        {
+          "id": "single_question",
+          "check": "Response asks no more than one primary question.",
+          "expected": true
+        }
+      ],
+      "rubric_checks": [
+        "context_economy",
+        "evidence_grounding",
+        "user_value_question_quality"
+      ],
+      "why_this_matters": "Context bloat weakens the first-turn experience and future multi-agent stability.",
+      "value_signal": "Failure should patch response-length and template-dumping rules.",
+      "promotion_relevance": "A failure is useful if it exposes prompt-bloat regression."
+    },
+    {
+      "id": "negative_narrow_bugfix",
+      "category": "negative_control",
+      "risk_level": "high",
+      "prompt": "这个仓库里有个 TypeScript 报错：ButtonProps 少了 disabled 字段。请直接修 bug。",
+      "should_trigger": false,
+      "expected_mode": "Do not trigger",
+      "must_pass_checks": [
+        "Do not run product discovery.",
+        "Treat as a narrow code bugfix request.",
+        "Do not ask product strategy questions."
+      ],
+      "hard_failures": [
+        "Runs Diagnostic Start.",
+        "Asks about MVP, target user, or product direction.",
+        "Suggests PRD or Roadmap work."
+      ],
+      "deterministic_checks": [
+        {
+          "id": "bugfix_boundary",
+          "check": "Response handles this as a bugfix boundary, not product discovery.",
+          "expected": true
+        }
+      ],
+      "rubric_checks": [
+        "trigger_boundary_correctness",
+        "context_economy"
+      ],
+      "why_this_matters": "The skill must not hijack normal implementation work.",
+      "value_signal": "Failure should patch Do Not Use rules.",
+      "promotion_relevance": "A failure should be promoted because false positives damage usability."
+    },
+    {
+      "id": "package_boundary_eval_runs_not_installed",
+      "category": "negative_control",
+      "risk_level": "medium",
+      "prompt": "上传 GitHub 的时候，把所有 eval-runs 也打进 skill zip 吧，这样用户安装后也能看到完整测试记录。",
+      "should_trigger": false,
+      "expected_mode": "Skill packaging boundary guidance",
+      "must_pass_checks": [
+        "Do not run product discovery.",
+        "Reject packaging eval-runs into install zip.",
+        "Explain that valuable promoted eval-runs may be committed to GitHub as project evidence.",
+        "Keep install package limited to runtime skill assets."
+      ],
+      "hard_failures": [
+        "Agrees to include eval-runs in skill zip.",
+        "Runs Diagnostic Start.",
+        "Confuses GitHub project evidence with install runtime.",
+        "Ignores context bloat risk."
+      ],
+      "deterministic_checks": [
+        {
+          "id": "eval_runs_outside_zip",
+          "check": "Response states eval-runs should stay outside install zip.",
+          "expected": true
+        },
+        {
+          "id": "github_evidence_allowed",
+          "check": "Response explicitly allows valuable promoted eval-runs to live in the GitHub repository as project evidence while staying outside the install zip.",
+          "expected": true
+        }
+      ],
+      "rubric_checks": [
+        "trigger_boundary_correctness",
+        "context_economy",
+        "recovery_next_action"
+      ],
+      "why_this_matters": "Project credibility evidence and runtime skill context have different packaging boundaries.",
+      "value_signal": "Failure should patch packaging docs and README boundary language.",
+      "promotion_relevance": "A failure is useful for release packaging governance."
+    },
+    {
+      "id": "eval_value_gate_no_findings",
+      "category": "context_economy",
+      "risk_level": "medium",
+      "prompt": "这次测试没有发现任何问题，也没有产生改进建议，但我们还是把完整 raw 和 report 都作为重要历史证据沉淀吧。",
+      "should_trigger": false,
+      "expected_mode": "Evaluation value gate guidance",
+      "must_pass_checks": [
+        "Do not run product discovery.",
+        "Reject full evidence promotion when there are no substantive findings or release-relevant confidence changes.",
+        "Allow minimal note only if it closes a named release question.",
+        "Explain that no-actionable runs should not inflate evidence quality."
+      ],
+      "hard_failures": [
+        "Promotes full run with no value signal.",
+        "Claims no-finding run as strong evidence.",
+        "Runs Diagnostic Start.",
+        "Ignores Value Gate."
+      ],
+      "deterministic_checks": [
+        {
+          "id": "no_full_promotion_without_value",
+          "check": "Response blocks full promotion without substantive findings or release-relevant confidence.",
+          "expected": true
+        }
+      ],
+      "rubric_checks": [
+        "trigger_boundary_correctness",
+        "context_economy",
+        "recovery_next_action"
+      ],
+      "why_this_matters": "Evidence archives should prove learning, not accumulate noise.",
+      "value_signal": "Failure should patch Value Gate and promotion policy.",
+      "promotion_relevance": "A failure should be promoted because it tests the evidence-governance mechanism itself."
+    },
+    {
+      "id": "baseline_comparison_required_before_superiority_claim",
+      "category": "negative_control",
+      "risk_level": "medium",
+      "prompt": "我们跑了一次 skill 测试，分数还不错。README 可以写这个 skill 已经证明比普通模型效果更好了吗？",
+      "should_trigger": false,
+      "expected_mode": "Evidence claim boundary guidance",
+      "must_pass_checks": [
+        "Do not run product discovery.",
+        "Reject superiority claim without baseline-vs-skill A/B evidence.",
+        "Allow narrower claim about scenario harness or current test result only if supported.",
+        "Recommend baseline comparison before superiority language."
+      ],
+      "hard_failures": [
+        "Claims superiority without baseline.",
+        "Runs Diagnostic Start.",
+        "Turns score into release-grade validation.",
+        "Ignores evidence limitations."
+      ],
+      "deterministic_checks": [
+        {
+          "id": "baseline_required",
+          "check": "Response states baseline-vs-skill evidence is required before superiority claims.",
+          "expected": true
+        }
+      ],
+      "rubric_checks": [
+        "trigger_boundary_correctness",
+        "evidence_grounding",
+        "recovery_next_action"
+      ],
+      "why_this_matters": "Public claims must match evidence quality, especially for GitHub credibility.",
+      "value_signal": "Failure should patch README-safe claims and evaluation-package boundaries.",
+      "promotion_relevance": "A failure is useful for release-note governance."
+    }
+  ]
+}
