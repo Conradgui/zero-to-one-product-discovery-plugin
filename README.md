@@ -1,26 +1,31 @@
 # Zero-to-One Product Discovery Plugin
 
-`zero-to-one-product-discovery-plugin` is a Codex plugin distribution wrapper for the `zero-to-one-product-discovery` workflow skill.
+`zero-to-one-product-discovery-plugin` 是 `zero-to-one-product-discovery`
+workflow skill 的 Codex plugin 分发包装层。
 
-The core capability is still the skill. This repository exists to package that skill as a plugin with a manifest, install boundary, and validation checks, without mixing plugin distribution concerns back into the core workflow source repository.
+核心能力仍然来自 bundled skill。这个仓库只负责把该 skill 以 Codex plugin 的形式发布，提供
+manifest、安装边界、README、验证脚本和未来分发入口。它不是核心 skill 的替代仓库，也不应把
+plugin 分发层的约束反向污染核心 workflow 源仓库。
 
-## What This Plugin Does
+## 这个 Plugin 做什么
 
-This plugin provides a stage-gated AI product discovery workflow for early product, open-source, side-project, and startup ideas.
+这个 plugin 提供一个面向早期产品、开源项目、side project 和 startup idea 的分阶段 AI product
+discovery workflow。
 
-It is designed to prevent an AI assistant from prematurely producing final PRDs, Roadmaps, ADRs, or Implementation Plans before the problem, evidence, assumptions, risks, and MVP hypothesis are grounded.
+它的重点不是快速生成 PRD、Roadmap、ADR 或 Implementation Plan，而是先让 AI assistant
+围绕问题、证据、假设、风险和 MVP hypothesis 做足 grounding，避免在信息不足时过早进入规划或编码。
 
-The workflow supports:
+workflow 支持：
 
-- Diagnostic Start for vague ideas.
-- Material Assimilation for existing notes, PRDs, sketches, feedback, or research.
-- Problem Framing, Solution Exploration, Feasibility Discovery, and MVP Hypothesis.
-- Planning Artifacts only after readiness gates.
-- Implementation Planning only after review-ready planning artifacts.
+- Diagnostic Start：处理非常模糊的 idea。
+- Material Assimilation：吸收已有 notes、PRD、sketches、feedback 或 research。
+- Problem Framing、Solution Exploration、Feasibility Discovery 和 MVP Hypothesis。
+- Planning Artifacts：只在 readiness gates 通过后生成。
+- Implementation Planning：只在 planning artifacts 达到 review-ready 后推进。
 
-## Repository Boundary
+## 仓库边界
 
-This repository is the plugin distribution layer.
+这个仓库是 Plugin Lite 分发层：
 
 ```text
 Core workflow skill
@@ -29,83 +34,99 @@ Core workflow skill
   -> future MCP / UI / CLI extension, if needed
 ```
 
-The bundled skill lives in:
+bundled skill 位于：
 
 ```text
 skills/zero-to-one-product-discovery/
 ```
 
-The plugin manifest lives in:
+plugin manifest 位于：
 
 ```text
 .codex-plugin/plugin.json
 ```
 
-## What Is Not Included
+除非是在修复分发包复制错误，否则不要在这个仓库里改核心 workflow 行为。核心 skill 的演进应在核心项目中完成，再同步到本分发仓库。
 
-This plugin intentionally does not include:
+## 不包含什么
+
+这个 plugin 有意不包含：
 
 - `zero-to-one-product-discovery-eval-runs/`
 - `dist/` release zip history
-- temporary publish directories
-- historical raw evaluation transcripts
+- 临时 publish directories
+- 历史 raw evaluation transcripts
 - MCP server configuration
 - app UI configuration
-- LangGraph or Python runtime
+- LangGraph 或 Python runtime
 
-Evaluation evidence should remain in the core project evidence archive. The plugin runtime should stay small and focused.
+evaluation evidence 应继续保留在核心项目的 evidence archive 中。plugin runtime 应保持小而清晰。
 
-## Why Plugin Lite
+## 为什么是 Plugin Lite
 
-The project started as a workflow skill because the core problem is behavior governance: when an AI agent should ask, downgrade, route, audit, or stop.
+这个项目最初是 workflow skill，因为核心问题是行为治理：AI agent 什么时候应该提问、降级输出、切换阶段、审计或停止。
 
-The plugin layer adds productized distribution:
+plugin 层增加的是产品化分发能力：
 
-- a plugin manifest;
-- a clear install boundary;
-- Codex plugin metadata;
-- package validation;
-- room for future MCP or UI extensions if real use cases require them.
+- plugin manifest；
+- 清晰的安装边界；
+- Codex plugin metadata；
+- package validation；
+- 为未来 MCP 或 UI 扩展预留空间。
 
-It does not replace the skill and does not add fake complexity for presentation.
+它不替代 skill，也不为了展示而增加不必要的复杂度。
 
 ## Claim Boundary
 
-Supported claim:
+支持的 claim：
 
-- This plugin packages an existing evidence-backed workflow skill for Codex distribution.
+- 这个 plugin 将一个已有、带 evidence 支撑的 workflow skill 打包为 Codex plugin 分发形态。
 
-Unsupported claims:
+不支持的 claim：
 
-- It is not production-grade validation.
-- It does not prove cross-model superiority.
-- It does not add a service runtime, MCP server, or app UI.
-- It does not replace the core `zero-to-one-product-discovery` source repository.
+- 它不是 production-grade validation。
+- 它不证明跨模型优越性。
+- 它没有新增 service runtime、MCP server 或 app UI。
+- 它不替代核心 `zero-to-one-product-discovery` 源仓库。
 
-## Validate
+## 安装和使用
 
-Run:
+公开使用时，以 Codex app 的 Plugins 入口为准：在 Codex 左上角打开 Plugins，浏览或添加 plugin。当前 README 不写未经验证的 CLI 安装命令。
+
+安装后可以这样使用：
+
+```text
+我有一个很模糊的开源产品想法。请使用 zero-to-one product discovery，不要急着写 PRD 或代码。
+```
+
+或者：
+
+```text
+探索我的早期产品想法，先找出最有风险的假设，再讨论是否进入实现规划。
+```
+
+## 本地验证
+
+运行自定义 package 验证：
 
 ```bash
 python3 scripts/validate-plugin-package.py
 ```
 
-For Codex plugin schema validation, also run the plugin validator from the local `plugin-creator` skill when available:
+运行 Codex plugin schema 验证：
 
 ```bash
 python3 /Users/conrad/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py /Users/conrad/Desktop/zero-to-one-product-discovery-plugin
 ```
 
-## Suggested Usage
+## 维护原则
 
-After installing the plugin in Codex, try:
+- 保持小而可 review 的 diff。
+- plugin 分发层只维护 manifest、README、验证脚本、安装边界和未来分发元数据。
+- 不在这里新增 analytics、telemetry 或网络调用。
+- 不声明 `mcpServers`、`apps` 或 `hooks`，除非对应的配置和 runtime 真实存在。
+- 核心 workflow 行为变更应先在核心 skill 项目中完成，再同步到本仓库。
 
-```text
-I have a vague open-source product idea. Use zero-to-one product discovery and do not rush into PRD or code.
-```
+## License
 
-Or:
-
-```text
-Explore my early product idea and identify the riskiest assumptions before planning implementation.
-```
+MIT
