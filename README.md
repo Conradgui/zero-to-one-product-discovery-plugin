@@ -7,6 +7,8 @@ workflow skill 的 Codex plugin 分发包装层。
 manifest、安装边界、README、验证脚本和未来分发入口。它不是核心 skill 的替代仓库，也不应把
 plugin 分发层的约束反向污染核心 workflow 源仓库。
 
+这个仓库解决的是产品化分发问题，而不是重新发明 workflow：当一个 AI discovery skill 从个人安装走向可被他人浏览、安装和复用时，最容易出错的地方不是多写一个功能，而是边界变得含糊。plugin 层把可安装入口、manifest metadata、runtime 包内容和验证脚本固定下来，让使用者看到的是一个清晰的 Codex plugin，而维护者仍然能把核心行为演进留在源 skill 仓库中。
+
 ## 这个 Plugin 做什么
 
 这个 plugin 提供一个面向早期产品、开源项目、side project 和 startup idea 的分阶段 AI product
@@ -14,6 +16,8 @@ discovery workflow。
 
 它的重点不是快速生成 PRD、Roadmap、ADR 或 Implementation Plan，而是先让 AI assistant
 围绕问题、证据、假设、风险和 MVP hypothesis 做足 grounding，避免在信息不足时过早进入规划或编码。
+
+对使用者来说，它提供的是一个更容易被 Codex 发现和触发的产品发现入口；对维护者来说，它是一层分发边界，明确哪些文件属于 runtime，哪些证据、zip 历史或临时产物不应该进入 plugin 包。
 
 workflow 支持：
 
@@ -74,7 +78,7 @@ plugin 层增加的是产品化分发能力：
 - package validation；
 - 为未来 MCP 或 UI 扩展预留空间。
 
-它不替代 skill，也不为了展示而增加不必要的复杂度。
+这里刻意保持 Plugin Lite，而不是直接加入 MCP server、app UI、LangGraph runtime 或额外 CLI。原因是当前产品风险不在“缺少更多界面”，而在“分发形态是否让边界更清楚”：plugin 应该让 skill 更容易安装和识别，但不应该把尚未验证的 runtime 能力包装成已经存在的产品能力。
 
 ## Claim Boundary
 
