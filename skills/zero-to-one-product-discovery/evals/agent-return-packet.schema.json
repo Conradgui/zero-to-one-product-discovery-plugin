@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Z2O Agent Return Packet",
+  "type": "object",
+  "required": [
+    "status",
+    "output_summary",
+    "evidence_changes",
+    "blockers",
+    "conflicts",
+    "self_check",
+    "recommended_controller_action"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": [
+        "ready_for_review",
+        "ready_for_next_stage",
+        "needs_more_evidence",
+        "needs_main_skill_decision",
+        "blocked"
+      ]
+    },
+    "output_summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_changes": {
+      "type": "object",
+      "required": [
+        "facts",
+        "assumptions",
+        "unknowns",
+        "risks"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "facts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unknowns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "conflicts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "self_check": {
+      "type": "object",
+      "required": [
+        "boundary_check",
+        "evidence_check",
+        "completeness_check"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "boundary_check": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_check": {
+          "type": "string",
+          "minLength": 1
+        },
+        "completeness_check": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "recommended_controller_action": {
+      "type": "string",
+      "enum": [
+        "accept",
+        "downgrade",
+        "request_evidence",
+        "route_to_audit",
+        "ask_user",
+        "block",
+        "reroute",
+        "escalate_to_adr",
+        "stop"
+      ]
+    },
+    "artifact_reference": {
+      "type": "string"
+    }
+  },
+  "examples": [
+    {
+      "status": "ready_for_review",
+      "output_summary": "PRD outline produced with missing success indicators called out.",
+      "evidence_changes": {
+        "facts": [],
+        "assumptions": [
+          "MVP slice remains assumption-labeled."
+        ],
+        "unknowns": [
+          "Success and failure indicators are not defined."
+        ],
+        "risks": [
+          "Final PRD would overstate readiness."
+        ]
+      },
+      "blockers": [
+        "Cannot finalize until success indicators are grounded."
+      ],
+      "conflicts": [],
+      "self_check": {
+        "boundary_check": "Stayed in outline mode.",
+        "evidence_check": "All unverified claims are labeled.",
+        "completeness_check": "Required outline sections are present."
+      },
+      "recommended_controller_action": "route_to_audit",
+      "artifact_reference": "prd-outline"
+    }
+  ]
+}

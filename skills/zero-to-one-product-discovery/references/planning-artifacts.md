@@ -46,6 +46,63 @@ Before routing to a final Planning Artifact, confirm every required input is gro
 
 If any gate is missing, route to an outline, evidence gap review, decision surface, or the highest-leverage blocking question for the current turn instead of a final artifact. After the user answers, re-evaluate the gate and repeat the loop until the artifact is grounded or blocked.
 
+When routing to any Planning Artifact, show the current Evidence Maturity level and the recommended maturity for that artifact (see "Recommended Evidence Maturity By Artifact" below). If current maturity is below recommended, inform the user and ask whether to proceed with a labeled draft or first address evidence gaps.
+
+### Readiness Spectrum
+
+The Entry Gate is the authoritative binary check (pass/fail). The Readiness Spectrum provides a continuous score for user feedback — it does not replace the gate.
+
+**readiness_score calculation**:
+
+```
+readiness_score = grounded_inputs / total_required_inputs
+```
+
+- `grounded_inputs` = number of required inputs for this artifact that are grounded (confirmed fact, inspected material, or accepted decision)
+- `total_required_inputs` = total number of required inputs from the Grounding Contract table for this artifact
+- Result: 0.0-1.0
+
+If impact_if_wrong data is available, critical/high impact unverified items reduce the effective readiness:
+
+```
+adjusted_readiness = readiness_score × impact_factor
+```
+
+- `impact_factor` = 1.0 if no critical/high unverified items; 0.8 if any high unverified; 0.6 if any critical unverified
+
+**Readiness Spectrum output format** (shown when user says "readiness" / "准备度" / "还差多少"):
+
+```markdown
+## Readiness Spectrum: [Artifact Name]
+
+### Overall Readiness: 63%
+
+| Required Input | Status | Impact | Gap Action | Fastest Path |
+|---|---|---|---|---|
+| Problem definition | ✅ Grounded | High | — | — |
+| User/scenario hypothesis | ⚠️ Assumption | Critical | 验证目标用户 | 用户画像研究（2 天） |
+| Solution direction | ✅ Grounded | Medium | — | — |
+| MVP hypothesis | ⚠️ Assumption | High | 确认 MVP 范围 | Stakeholder 对齐（1 天） |
+| Success/failure indicators | ❌ Missing | Medium | 定义指标 | 团队讨论（半天） |
+| Risks | ✅ Named | — | — | — |
+| Constraints | ✅ Named | — | — | — |
+| Non-goals | ❌ Missing | Low | 定义非目标 | PM 自行决定 |
+
+### Fastest Validation Path
+1. Stakeholder 对齐 MVP 范围（1 天）→ 从 63% 到 75%
+2. 用户画像研究（2 天）→ 从 75% 到 88%
+3. 团队讨论 success/failure indicators（半天）→ 从 88% 到 100%
+
+**预计从当前到 PRD-ready：3.5 天**
+```
+
+**Restrictions**:
+- The readiness score is advisory. It does not bypass the Entry Gate's binary check.
+- The readiness score does not replace the one-question-per-turn rule.
+- The fastest validation path is an estimate, not a commitment.
+
+**Scope**: The Readiness Spectrum is automatically computed for any artifact that has a Grounding Contract entry (see table below). Individual child-skill adapters do not need to repeat the readiness calculation — it is computed by the main workflow using the Grounding Contract table.
+
 ## Grounding Contract
 
 An artifact is grounded only when the main workflow can name the evidence status for each required input.
@@ -62,6 +119,29 @@ An artifact is grounded only when the main workflow can name the evidence status
 | Mermaid | Named entities, flows, dependencies, states, or decisions, plus reason a diagram helps | Produce assumption-labeled sketch or no diagram |
 | Implementation Plan | Review-ready planning artifacts, accepted technical decisions, file/module boundaries, acceptance criteria, and verification commands | Produce planning readiness review |
 | Review | Artifact or plan exists, review lens is named, and blocker definition is clear | Ask what artifact or lens to review |
+
+### Recommended Evidence Maturity By Artifact
+
+Each artifact has a recommended minimum evidence maturity level. These are guidelines, not hard gates — the Grounding Contract remains the authoritative check.
+
+| Artifact | Recommended Maturity | Rationale |
+|---|---|---|
+| Research Brief | Insufficient (any) | Research is the first synthesis step; no minimum maturity required |
+| PRD | Partial (≥25%) | Problem and solution direction need some verified facts before PRD |
+| Roadmap | Partial (≥25%) | Sequencing requires grounded PRD, which requires some verified facts |
+| Milestone | Sufficient (≥50%) | Validation gates need verified evidence to be meaningful |
+| User Stories | Partial (≥25%) | Stories need grounded MVP hypothesis |
+| Acceptance Criteria | Partial (≥25%) | Criteria need specific requirements |
+| ADR | Sufficient (≥50%) | Architecture decisions need verified constraints |
+| Mermaid | Insufficient (any) | Diagrams can use assumption-labeled sketches |
+| Implementation Plan | Sufficient (≥50%) | Engineering plans need verified product and technical decisions |
+| Review | Insufficient (any) | Reviews can happen at any maturity level |
+
+"Insufficient (any)" means the artifact can be produced at any evidence maturity level. No minimum maturity check is applied.
+
+When the user requests an artifact below its recommended maturity level, show the current maturity and the gap, then ask whether to proceed with a labeled draft or first address the evidence gaps.
+
+When the Risk Map shows items with `impact_if_wrong` of "critical" or "high" that are still unverified, warn the user before producing any Planning Artifact. These items should be validated first unless the user explicitly accepts the risk.
 
 ## Routing Matrix
 
@@ -80,6 +160,21 @@ An artifact is grounded only when the main workflow can name the evidence status
 | Known relationships need visualization | Mermaid contract | Purposeful diagram with assumption labels | Decorative or invented architecture diagrams |
 | Planning artifacts are confirmed and engineering handoff is needed | Implementation Plan contract | Decision-complete implementation plan | Reopening product strategy without a contradiction |
 | Artifact or plan needs critique | Review contract | Findings, blockers, risks, suggested changes | Style-only objections as blockers |
+| Quick Mode activated with sufficient materials and user requests artifact draft | Respective artifact contract in Quick Mode | Draft artifact with `[Fact]` / `[Assumption]` / `[Unknown]` labels and Evidence Gap Summary | Unlabeled final artifacts, Implementation Planning |
+| Review-ready Implementation Plan exists and user requests execution handoff | Execution Bridge contract | Host-executable dry-run handoff with evidence labels | Modifying Implementation Plan content, bypassing Implementation Planning, creating external issues directly |
+| Accepted, review-ready, or explicitly marked Quick Mode draft artifacts exist and user requests export/package/workbench | Artifact Export contract | Stable file package with ready/not-ready markers, Quick Mode draft markers, and manifest guard fields | Inventing missing artifact content, dropping Quick Mode labels, storing full transcript in Workbench, packaging export state in skill zip |
+| Stable artifacts have been exported and user requests artifact diff or revision history | Revision Trace contract | Bounded revision ledger with hashes, diff files, and Controller-linked rationale | Storing full transcript/history, replacing stable artifact paths, treating revision count as maturity |
+
+### Quick Mode Grounding Rules
+
+When Quick Mode is active, the grounding contract is relaxed but not eliminated:
+
+- The artifact is produced as a `[Quick Mode Draft]`, not a final artifact.
+- Every section must be labeled `[Fact]`, `[Assumption]`, or `[Unknown]` based on available evidence.
+- The Entry Gate is evaluated but does not block — instead, ungrounded inputs are labeled and listed in the Evidence Gap Summary.
+- The Grounding Contract table still applies: if an input is missing, the corresponding section is labeled `[Unknown]` rather than omitted or invented.
+- Implementation Planning is excluded from Quick Mode. It requires review-ready planning artifacts regardless of mode.
+- If a Quick Mode draft is exported before Standard Exploration validates it, the file keeps a `QUICK_MODE_DRAFT` top marker and the manifest uses `content_mode: quick_mode_draft`.
 
 ## Agent Work Order / Child Skill Handoff Packet
 

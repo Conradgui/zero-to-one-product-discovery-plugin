@@ -18,6 +18,8 @@
 - 当子 skill 作为 Producer Agent 使用时，必须接收 Agent Work Order，并以 Agent Return Packet 摘要返回状态、证据变化、阻塞、冲突、自检和建议动作。
 - 重要产物不能由 producer 自行接受为 final；必须由 Controller Agent 接受、降级、阻塞，或交给 Auditor Agent 审核。
 - Runtime Workbench 只保存当前状态摘要；不要把完整产物、完整讨论或长历史写入工作台。
+- Artifact Export 只能导出稳定文件和 File Workbench 视图；不能把缺失产物补造为 ready，也不能把 Quick Mode draft 伪装成 final，还必须在 manifest 中记录 `source_status`、`content_mode` 和 `status_guard`。
+- Revision Trace 只能记录稳定 artifact 的 bounded ledger；不能保存 full transcript、完整 agent packet、完整 audit report、hidden reasoning 或版本化替代文件。
 - 子 skill 的重要输出必须包含假设 / 未知 / 阻塞项、readiness signal 和 Context Resume Packet。
 - `vendor/` 中的上游 command、模板或 mini-hub 只能作为质量参考，不能绕过本地 adapter 和主控阶段门禁。
 
@@ -35,6 +37,9 @@
 | `implementation-plan` | agent-skills planning-and-task-breakdown；awesome-copilot implementation-plan references | Implementation Planning |
 | `review` | agent-skills code-review-and-quality / test-driven-development | Artifact Review / Implementation Review |
 | `context-handoff` | agent-skills context-engineering | 任何需要跨轮次或跨会话交接的阶段 |
+| `execution-bridge` | 本地新建；GitHub Issues host handoff / Claude Code task / Jira ticket 格式转换 | Implementation Planning（需 review-ready Implementation Plan + 用户主动请求执行交接） |
+| `artifact-export` | 本地新建；稳定文件结构、File Workbench、manifest | 已有 accepted 或 review-ready artifacts，且用户请求导出产物或工作台 |
+| `revision-trace` | 本地新建；artifact hash / diff / revision ledger | 稳定 artifacts 已导出，且用户请求 artifact diff 或产物变更记录 |
 
 ## 使用原则
 

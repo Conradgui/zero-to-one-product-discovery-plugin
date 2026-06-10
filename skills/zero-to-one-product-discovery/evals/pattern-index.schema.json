@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Z2O Pattern Index",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "project_version",
+    "description",
+    "patterns",
+    "projects"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "project_version": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "patterns": {
+      "type": "object",
+      "required": [
+        "evidence",
+        "decisions",
+        "stage_gates"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "evidence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pattern_entry"
+          }
+        },
+        "decisions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pattern_entry"
+          }
+        },
+        "stage_gates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pattern_entry"
+          }
+        }
+      }
+    },
+    "projects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "completed_at"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "completed_at": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "pattern_entry": {
+      "type": "object",
+      "required": [
+        "id",
+        "project",
+        "type",
+        "description",
+        "metadata",
+        "created_at"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "project": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "evidence",
+            "decision",
+            "stage_gate"
+          ]
+        },
+        "description": {
+          "type": "string"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "created_at": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "schema_version": "0.1.0",
+      "project_version": "v0.4.0-rc.4",
+      "description": "Cross-project discovery pattern library for zero-to-one-product-discovery.",
+      "patterns": {
+        "evidence": [],
+        "decisions": [],
+        "stage_gates": []
+      },
+      "projects": []
+    }
+  ]
+}

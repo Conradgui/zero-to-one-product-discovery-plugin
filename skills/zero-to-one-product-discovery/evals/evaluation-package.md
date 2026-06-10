@@ -28,6 +28,8 @@ The installable skill keeps only reusable evaluation assets:
 - `baseline-ab-template.md`: reusable baseline-vs-skill A/B protocol.
 - `baseline-ab-scoring-rubric.md`: paired A/B scoring rubric and claim thresholds.
 - `baseline-ab-report.schema.json`: machine-readable A/B report schema.
+- `agent-work-order.schema.json`, `agent-return-packet.schema.json`, `audit-report.schema.json`, `workbench.schema.json`, `pattern-index.schema.json`, `artifact-manifest.schema.json`, `execution-handoff.schema.json`, `revision-index.schema.json`, and `revision-record.schema.json`: strict multi-agent, export, execution handoff, and revision ledger contract schemas for release checks and future runtime adapters.
+- `controller-actions.json`: single source of truth for Controller action names used by schemas and scripts.
 - `evaluation-package.md`: concise evidence interpretation and release boundary.
 
 Raw responses, JSONL traces, scored reports, audit notes, handoff records, and design records stay outside the skill package in `zero-to-one-product-discovery-eval-runs/`.
@@ -36,9 +38,9 @@ Promoted records in `zero-to-one-product-discovery-eval-runs/current/<version>/<
 
 ## Current Version
 
-Current package version: `v0.2.1-multi-agent-docs`.
+Current package version: `v0.4.0-rc.4-control-surface-hardening-rc`.
 
-`v0.1.0-draft` remains the early historical draft. The multi-agent workflow architecture is tracked as the larger `v0.1.5` upgrade. `v0.1.6` packaged the Windows clean-install validation handoff, `v0.1.7` closed the first relay findings, `v0.1.8` applies the final documentation-boundary and PRD Draft user-gate patch, and `v0.1.9` adds a controlled local baseline-vs-skill A/B methodology and evidence run. `v0.2.0` is the portfolio release that packages the installable showcase and evidence dashboard. `v0.2.1` expands the discoverable multi-agent documentation entrypoint under `agents/`. None of these replace the `v0.1.5` strict-suite evidence.
+`v0.1.0-draft` remains the early historical draft. The multi-agent workflow architecture is tracked as the larger `v0.1.5` upgrade. `v0.1.6` packaged the Windows clean-install validation handoff, `v0.1.7` closed the first relay findings, `v0.1.8` applies the final documentation-boundary and PRD Draft user-gate patch, and `v0.1.9` adds a controlled local baseline-vs-skill A/B methodology and evidence run. `v0.2.0` is the portfolio release that packages the installable showcase and evidence dashboard. `v0.2.1` expands the discoverable multi-agent documentation entrypoint under `agents/`. `v0.3.0` adds the P0/P1/P2 feature set. `v0.4.0-rc.1` hardens those features with strict contract schemas, Controller state-machine guidance, expanded RC scenarios, and packaging-boundary validation. `v0.4.0-rc.2` adds Artifact Manifest, Execution Handoff, File Workbench, and stable export package contracts without adding an Eval Runner or external integration runtime. `v0.4.0-rc.3` adds bounded Revision Index / Revision Record contracts and a standard-library revision trace script without turning Workbench into a history store. `v0.4.0-rc.4` adds Controller action registry checks, atomic Workbench persistence, evidence summary consistency checks, Artifact Manifest guard fields, and four control-surface scenarios. None of these replace the `v0.1.5` strict-suite evidence.
 
 ## Strict Suite Shape
 
@@ -51,6 +53,19 @@ Scenario categories:
 - `evidence_grounding`
 - `child_skill_routing`
 - `multi_agent_orchestration`
+- `multi_agent_contracts`
+- `quick_mode`
+- `evidence_dashboard`
+- `validation_planning`
+- `material_assimilation`
+- `risk_readiness`
+- `pattern_library`
+- `artifact_export`
+- `file_workbench`
+- `revision_trace`
+- `control_surface`
+- `execution_handoff`
+- `execution_bridge`
 - `audit_user_gate`
 - `context_economy`
 - `multi_turn_continuity`
@@ -90,6 +105,11 @@ No-actionable-finding runs must not be presented as strong evidence. They can be
 | v0.1.9 baseline A/B | `current/v0.1.9/2026-05-18-baseline-ab-run-01/` | Controlled local 10-scenario A/B: skill average 95.7, baseline average 68.4, average delta +27.3, 0 skill hard failures; supports scenario-scoped improvement only. |
 | v0.2.0 portfolio release | Repository README, portfolio case study, and install zip | Converts prior architecture and evaluation evidence into an installable showcase package; does not add new release-grade validation. |
 | v0.2.1 multi-agent docs | `agents/README.md` and compact orchestration entrypoint | Makes the multi-agent role model visible in the skill body without changing runtime behavior or evaluation claims. |
+| v0.3.0 P0/P1/P2 feature release | `SKILL.md`, `workflow.md`, adapters, and README | Adds Auto-Persist, Quick Mode, Execution Bridge, Evidence Dashboard, Validation Plan, Express Review, Risk Map, Readiness Spectrum, and Pattern Library; regression confidence comes from the existing 22-scenario suite, not feature-specific external validation. |
+| v0.4.0-rc.1 stability RC | 35-scenario `evals/evals.json`, multi-agent contract schemas, and `scripts/validate-contracts.py` | Makes communication contracts, Controller actions, P0/P1/P2 scenario coverage, Execution Bridge E2E prompts, and packaging boundaries machine-checkable; still not production-grade or release-grade validation. |
+| v0.4.0-rc.2 artifact/workbench RC | Artifact Manifest schema, Execution Handoff schema, Artifact Export adapter, File Workbench docs, and `scripts/validate-contracts.py` | Makes stable artifact package shape and host-executable dry-run handoff machine-checkable; does not prove real GitHub/Jira execution or add automated scenario running. |
+| v0.4.0-rc.3 revision ledger RC | Revision Index schema, Revision Record schema, Revision Trace adapter, `scripts/generate_revision_trace.py`, and `scripts/validate-contracts.py` | Makes bounded artifact hash/diff/revision records machine-checkable; does not prove semantic rationale quality, full trace UI, or long-term revision governance. |
+| v0.4.0-rc.4 control-surface RC | Controller action registry, Workbench persist script, Artifact Manifest guard fields, 39-scenario `evals/evals.json`, and `scripts/validate-contracts.py` | Makes action drift, corrupted Workbench summaries, Quick Mode export warning, and status/content mismatch guardrails machine-checkable; does not prove real runtime adoption or external user behavior. |
 
 ## Allowed Claims
 
@@ -106,6 +126,11 @@ The current evidence supports these claims:
 - `v0.1.9` adds baseline-vs-skill methodology and a controlled local 10-scenario A/B run showing scenario-scoped improvement in stage gates, boundary safety, and user-gate behavior.
 - `v0.2.0` is an installable portfolio release that organizes the evidence dashboard, package boundary, and project case study.
 - `v0.2.1` clarifies the multi-agent documentation structure by adding `agents/` role-protocol entrypoints while preserving platform-agnostic behavior.
+- `v0.3.0` adds the P0/P1/P2 feature set while preserving the prior stage-gate and multi-agent boundaries.
+- `v0.4.0-rc.1` adds strict multi-agent contract schemas, Controller state-machine guidance, expanded P0/P1/P2 and Execution Bridge scenarios, and a deterministic contract/package validation script.
+- `v0.4.0-rc.2` adds stable Artifact Export, File Workbench, Artifact Manifest schema, and Execution Handoff schema while preserving the no-runtime-framework and no-external-side-effect boundary.
+- `v0.4.0-rc.3` adds bounded Artifact Revision Ledger contracts and a local revision trace script while preserving the current-state Workbench boundary and avoiding full transcript, full artifact history, hidden reasoning, or raw prompt storage.
+- `v0.4.0-rc.4` adds control-surface hardening for Controller action consistency, Workbench atomic persistence, evidence summary consistency, and misleading export prevention while preserving the no-runtime-framework and no-external-side-effect boundary.
 
 ## Unsupported Claims
 

@@ -1,7 +1,7 @@
 {
   "name": "zero-to-one-product-discovery-plugin",
-  "version": "0.2.1",
-  "description": "Codex plugin distribution wrapper for the zero-to-one product discovery workflow skill.",
+  "version": "0.4.0",
+  "description": "Codex plugin for the zero-to-one product discovery workflow skill. Stage-gated AI discovery with multi-agent governance, evidence maturity tracking, artifact export, and revision trace.",
   "author": {
     "name": "Conrad",
     "url": "https://github.com/Conradgui"
@@ -14,22 +14,30 @@
     "product-discovery",
     "codex-plugin",
     "workflow-skill",
-    "stage-gates"
+    "stage-gates",
+    "early-stage",
+    "mvp",
+    "startup"
   ],
   "skills": "./skills/",
   "interface": {
     "displayName": "Zero-to-One Product Discovery",
-    "shortDescription": "Stage-gated AI workflow for early product discovery.",
-    "longDescription": "A Codex plugin wrapper for the zero-to-one-product-discovery workflow skill. It helps agents handle early product, open-source, side-project, and startup ideas through evidence-aware stage gates instead of prematurely producing PRDs, roadmaps, ADRs, or implementation plans.",
+    "shortDescription": "Stage-gated AI workflow for early product discovery with multi-agent governance.",
+    "longDescription": "A Codex plugin for the zero-to-one-product-discovery workflow skill. It helps agents handle early product, open-source, side-project, and startup ideas through evidence-aware stage gates instead of prematurely producing PRDs, roadmaps, ADRs, or implementation plans. Features include Quick Mode, Evidence Maturity Dashboard, Risk Map, Readiness Spectrum, Pattern Library, Execution Bridge, Artifact Export, and Revision Trace.",
     "developerName": "Conrad",
     "category": "Productivity",
     "capabilities": [
+      "Read",
       "Write"
     ],
+    "websiteURL": "https://github.com/Conradgui/zero-to-one-product-discovery-plugin",
     "defaultPrompt": [
       "Explore my early product idea without rushing into PRD.",
       "Review this product concept and find the riskiest assumptions.",
       "Turn my vague open-source idea into a grounded discovery flow."
-    ]
+    ],
+    "brandColor": "#3b82f6",
+    "composerIcon": "./assets/icon.png",
+    "logo": "./assets/logo.png"
   }
 }

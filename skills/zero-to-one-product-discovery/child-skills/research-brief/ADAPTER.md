@@ -25,6 +25,7 @@ Synthesize supplied evidence into a bounded research brief. Separate evidence fr
 - Evidence inventory.
 - Assumptions / unknowns / contradictions / gaps.
 - Problem, job, or scenario hypotheses labeled by evidence status.
+- Evidence Maturity Summary: total items, facts count, assumptions count, unknowns count, risks count, validated count, maturity level, maturity percentage.
 - The highest-leverage blocking question for the current turn if evidence is insufficient.
 - Decision Log candidates.
 - ADR candidates only when research exposes durable technical decisions.
@@ -37,7 +38,8 @@ When routed as the Research Producer, accept an Agent Work Order and return an A
 
 ### Workbench Updates
 
-- Update Evidence Snapshot with first-party evidence, user opinion, public claim, maintainer assumption, contradiction, and gap labels.
+- Update Evidence Snapshot items with structured evidence: each item gets id, content, type, validation_status, validation_plan, and source.
+- Update Evidence Snapshot summary: recalculate total, facts, assumptions, unknowns, risks, validated, maturity_percentage, and maturity_level.
 - Update Dependency Board with the one evidence gap that most affects the next workflow decision.
 - Update Risk Board only when the evidence exposes product, market, feasibility, or credibility risk.
 

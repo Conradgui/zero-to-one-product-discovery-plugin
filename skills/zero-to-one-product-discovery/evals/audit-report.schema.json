@@ -1,0 +1,147 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Z2O Audit Report",
+  "type": "object",
+  "required": [
+    "verdict",
+    "reviewed_item",
+    "blocking_issues",
+    "non_blocking_issues",
+    "boundary_check",
+    "evidence_check",
+    "consistency_check",
+    "recommended_next_action"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "verdict": {
+      "type": "string",
+      "enum": [
+        "pass",
+        "needs_revision",
+        "blocked"
+      ]
+    },
+    "reviewed_item": {
+      "type": "string",
+      "minLength": 1
+    },
+    "blocking_issues": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "non_blocking_issues": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "boundary_check": {
+      "type": "object",
+      "required": [
+        "status",
+        "summary"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "pass",
+            "fail"
+          ]
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "evidence_check": {
+      "type": "object",
+      "required": [
+        "status",
+        "summary"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "pass",
+            "fail"
+          ]
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "consistency_check": {
+      "type": "object",
+      "required": [
+        "status",
+        "summary"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "pass",
+            "fail"
+          ]
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "recommended_next_action": {
+      "type": "string",
+      "enum": [
+        "proceed",
+        "downgrade",
+        "ask_for_evidence",
+        "reroute",
+        "escalate_to_adr",
+        "block",
+        "stop"
+      ]
+    },
+    "producer_rewrite_included": {
+      "type": "boolean",
+      "const": false
+    }
+  },
+  "examples": [
+    {
+      "verdict": "needs_revision",
+      "reviewed_item": "PRD outline return packet",
+      "blocking_issues": [
+        "Success indicators are missing."
+      ],
+      "non_blocking_issues": [
+        "Roadmap dependency could be clearer."
+      ],
+      "boundary_check": {
+        "status": "pass",
+        "summary": "The artifact stayed in outline mode."
+      },
+      "evidence_check": {
+        "status": "fail",
+        "summary": "One success metric is missing evidence."
+      },
+      "consistency_check": {
+        "status": "pass",
+        "summary": "No conflict with accepted decisions."
+      },
+      "recommended_next_action": "ask_for_evidence",
+      "producer_rewrite_included": false
+    }
+  ]
+}

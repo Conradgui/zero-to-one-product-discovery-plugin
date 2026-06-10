@@ -47,34 +47,34 @@ Raw upstream files live under `vendor/`. Routeable local wrappers live under `ch
 |---|---|---|---|---|
 | `problem-framing-canvas` | `vendor/product-manager-skills/skills/problem-framing-canvas/UPSTREAM_SKILL.md` | Problem Framing / Research Brief | `vendored_with_local_adapter` | Must output problem hypothesis, assumptions, HMW, and evidence gaps without skipping Diagnostic Start. |
 | `jobs-to-be-done` | `vendor/product-manager-skills/skills/jobs-to-be-done/UPSTREAM_SKILL.md` | Research Brief / Positioning / PRD input | `vendored_with_local_adapter` | Must label jobs as validated, assumed, or unknown. |
-| `opportunity-solution-tree` | `/private/tmp/Product-Manager-Skills/skills/opportunity-solution-tree/SKILL.md` | Opportunity Mapping / Solution Options / Roadmap input | `local_rewrite_from_reference` | Spans outcome, solution, and experiment; split under local stage gates. |
-| `pol-probe-advisor` | `/private/tmp/Product-Manager-Skills/skills/pol-probe-advisor/SKILL.md` | Validation Plan / Milestone evidence | `local_rewrite_from_reference` | Requires a clear hypothesis; unsafe for vague ideas. Not vendored in the first copy-first batch. |
+| `opportunity-solution-tree` | Historical upstream reference, not currently vendored | Opportunity Mapping / Solution Options / Roadmap input | `local_rewrite_from_reference` | Spans outcome, solution, and experiment; split under local stage gates. |
+| `pol-probe-advisor` | Historical upstream reference, not currently vendored | Validation Plan / Milestone evidence | `local_rewrite_from_reference` | Requires a clear hypothesis; unsafe for vague ideas. Not vendored in the first copy-first batch. |
 | `prd-development` | `vendor/product-manager-skills/skills/prd-development/UPSTREAM_SKILL.md` | PRD | `vendored_with_local_adapter` | Eight-stage workflow may consume main hub responsibilities; extract quality checks and structure only. |
 | `roadmap-planning` | `vendor/product-manager-skills/skills/roadmap-planning/UPSTREAM_SKILL.md` | Roadmap | `vendored_with_local_adapter` | Extract Now/Next/Later, outcome linkage, sequencing risk, and validation gates. |
 | `user-story-mapping` | `vendor/product-manager-skills/skills/user-story-mapping/UPSTREAM_SKILL.md` | Milestone / User Stories / Release slicing | `vendored_with_local_adapter` | Only after validated opportunity or approved PRD. |
 | `user-story` | `vendor/product-manager-skills/skills/user-story/UPSTREAM_SKILL.md` | User Stories | `vendored_with_local_adapter` | Requires persona, problem, desired outcome, and scope boundary. |
-| `positioning-statement` / `positioning-workshop` | `/private/tmp/Product-Manager-Skills/skills/positioning-statement/SKILL.md`; `/private/tmp/Product-Manager-Skills/skills/positioning-workshop/SKILL.md` | Positioning / Product narrative | `local_rewrite_from_reference` | Positioning must not drive problem definition during Diagnostic Start. |
-| `recommendation-canvas` | `/private/tmp/Product-Manager-Skills/skills/recommendation-canvas/SKILL.md` | Review / Decision Memo / Product Bet Review | `local_rewrite_from_reference` | Generalize beyond AI-only assumptions if used. |
+| `positioning-statement` / `positioning-workshop` | Historical upstream reference, not currently vendored | Positioning / Product narrative | `local_rewrite_from_reference` | Positioning must not drive problem definition during Diagnostic Start. |
+| `recommendation-canvas` | Historical upstream reference, not currently vendored | Review / Decision Memo / Product Bet Review | `local_rewrite_from_reference` | Generalize beyond AI-only assumptions if used. |
 
 ### Benchmark-Only Commands
 
 | Command | Source Path | Why Benchmark Only |
 |---|---|---|
-| `/discover` | `/private/tmp/Product-Manager-Skills/commands/discover.md` | It orchestrates multiple PM stages and can bypass this repository's main workflow. |
-| `/write-prd` | `/private/tmp/Product-Manager-Skills/commands/write-prd.md` | It chains problem statement, persona, PRD, user story, and splitting, duplicating hub control. |
-| `/plan-roadmap` | `/private/tmp/Product-Manager-Skills/commands/plan-roadmap.md` | It is useful for expected quality, but route authority must stay local. |
+| `/discover` | Historical upstream command reference, not currently vendored | It orchestrates multiple PM stages and can bypass this repository's main workflow. |
+| `/write-prd` | Historical upstream command reference, not currently vendored | It chains problem statement, persona, PRD, user story, and splitting, duplicating hub control. |
+| `/plan-roadmap` | Historical upstream command reference, not currently vendored | It is useful for expected quality, but route authority must stay local. |
 
 ## agent-skills Candidates
 
 | Candidate | Source Path | Capability | Integration Mode | Gate / Risk |
 |---|---|---|---|---|
-| Orchestration Patterns | `/private/tmp/agent-skills/references/orchestration-patterns.md` | Hub-and-spoke rules | `local_rewrite_from_reference` | Useful immediately; must reinforce that only the hub orchestrates. |
+| Orchestration Patterns | Historical upstream reference, not currently vendored | Hub-and-spoke rules | `local_rewrite_from_reference` | Useful immediately; must reinforce that only the hub orchestrates. |
 | Context Engineering | `vendor/agent-skills/skills/context-engineering/UPSTREAM_SKILL.md` | Context Engineering / handoff packets | `vendored_with_local_adapter` | Task-specific context pack waits until the task is known. |
-| Spec-Driven Development | `/private/tmp/agent-skills/skills/spec-driven-development/SKILL.md` | Planning Artifacts Grounding | `local_rewrite_from_reference` | Should define grounded spec readiness, not replace product discovery. |
+| Spec-Driven Development | Historical upstream reference, not currently vendored | Planning Artifacts Grounding | `local_rewrite_from_reference` | Should define grounded spec readiness, not replace product discovery. |
 | Planning and Task Breakdown | `vendor/agent-skills/skills/planning-and-task-breakdown/UPSTREAM_SKILL.md` | Implementation Plan | `vendored_with_local_adapter` | Only after planning artifacts are review-ready. |
 | Documentation and ADRs | `vendor/agent-skills/skills/documentation-and-adrs/UPSTREAM_SKILL.md` | ADR | `vendored_with_local_adapter` | Accepted ADR requires grounded technical decision context. |
-| Source-Driven Development | `/private/tmp/agent-skills/skills/source-driven-development/SKILL.md` | Source policy / technical grounding | `local_rewrite_from_reference` | Specific implementation use waits for chosen stack/version. |
-| Incremental Implementation | `/private/tmp/agent-skills/skills/incremental-implementation/SKILL.md` | Implementation execution discipline | `local_rewrite_from_reference` | Only for concrete plan tasks. Not vendored in the first copy-first batch. |
+| Source-Driven Development | Historical upstream reference, not currently vendored | Source policy / technical grounding | `local_rewrite_from_reference` | Specific implementation use waits for chosen stack/version. |
+| Incremental Implementation | Historical upstream reference, not currently vendored | Implementation execution discipline | `local_rewrite_from_reference` | Only for concrete plan tasks. Not vendored in the first copy-first batch. |
 | Test-Driven Development / Test Engineer | `vendor/agent-skills/skills/test-driven-development/UPSTREAM_SKILL.md` | Test | `quality_gate_only` | Requires acceptance criteria and implementation target. |
 | Code Review and Quality / Code Reviewer | `vendor/agent-skills/skills/code-review-and-quality/UPSTREAM_SKILL.md` | Review | `quality_gate_only` | Requires diff and spec/task intent. |
 
@@ -95,7 +95,7 @@ Raw upstream files live under `vendor/`. Routeable local wrappers live under `ch
 |---|---|---|---|---|
 | `adr-generator.agent.md` | `vendor/awesome-copilot/index/adr-generator.agent.md` | ADR reference | `benchmark_only` | Agent persona is not routeable; use only as ADR quality reference. |
 | `create-implementation-plan.UPSTREAM_SKILL.md` | `vendor/awesome-copilot/index/create-implementation-plan.UPSTREAM_SKILL.md` | Implementation Plan reference | `benchmark_only` | Copilot packaging is not local workflow authority. |
-| Shipping and Launch / Security Auditor | `/private/tmp/agent-skills/skills/shipping-and-launch/SKILL.md`; `/private/tmp/agent-skills/agents/security-auditor.md` | Ship / Release gate | `quality_gate_only` | Requires implemented scope, risk profile, and verification commands. |
+| Shipping and Launch / Security Auditor | Historical upstream reference, not currently vendored | Ship / Release gate | `quality_gate_only` | Requires implemented scope, risk profile, and verification commands. |
 
 ## Next Implementation Order
 

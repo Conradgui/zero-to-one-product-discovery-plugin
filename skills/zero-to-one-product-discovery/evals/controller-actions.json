@@ -1,0 +1,16 @@
+{
+  "schema_version": "0.1.0",
+  "package_version": "v0.4.0-rc.4",
+  "description": "Single source of truth for Z2O Controller actions used by schemas, scripts, and documentation.",
+  "actions": [
+    "accept",
+    "downgrade",
+    "request_evidence",
+    "route_to_audit",
+    "ask_user",
+    "block",
+    "reroute",
+    "escalate_to_adr",
+    "stop"
+  ]
+}

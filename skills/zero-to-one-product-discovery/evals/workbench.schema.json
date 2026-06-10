@@ -1,0 +1,293 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Z2O Runtime Workbench",
+  "type": "object",
+  "required": [
+    "version",
+    "last_updated",
+    "workflow_state",
+    "evidence_snapshot",
+    "artifact_status",
+    "decision_log",
+    "skipped_stages"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(-rc\\.[0-9]+)?$"
+    },
+    "last_updated": {
+      "type": "string",
+      "minLength": 1
+    },
+    "workflow_state": {
+      "type": "object",
+      "required": [
+        "current_stage",
+        "current_goal",
+        "allowed_output_mode",
+        "depth_mode",
+        "quick_mode_entry_stage",
+        "do_not_cross"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "current_stage": {
+          "type": "string"
+        },
+        "current_goal": {
+          "type": "string"
+        },
+        "allowed_output_mode": {
+          "type": "string"
+        },
+        "depth_mode": {
+          "type": "string"
+        },
+        "quick_mode_entry_stage": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "do_not_cross": {
+          "type": "string"
+        }
+      }
+    },
+    "evidence_snapshot": {
+      "type": "object",
+      "required": [
+        "items",
+        "summary"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "content",
+              "type",
+              "validation_status",
+              "source",
+              "impact_if_wrong",
+              "risk_weighted_priority"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "content": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "fact",
+                  "assumption",
+                  "unknown",
+                  "risk"
+                ]
+              },
+              "validation_status": {
+                "type": "string",
+                "enum": [
+                  "verified",
+                  "unverified",
+                  "partially_validated"
+                ]
+              },
+              "validation_plan": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "additionalProperties": true
+              },
+              "source": {
+                "type": "string"
+              },
+              "impact_if_wrong": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "low",
+                  "medium",
+                  "high",
+                  "critical",
+                  null
+                ]
+              },
+              "impact_rationale": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "risk_weighted_priority": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "summary": {
+          "type": "object",
+          "required": [
+            "total",
+            "facts",
+            "assumptions",
+            "unknowns",
+            "risks",
+            "validated",
+            "maturity_percentage",
+            "maturity_level",
+            "critical_impact_items",
+            "high_impact_items",
+            "highest_risk_item_id"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "total": {
+              "type": "integer"
+            },
+            "facts": {
+              "type": "integer"
+            },
+            "assumptions": {
+              "type": "integer"
+            },
+            "unknowns": {
+              "type": "integer"
+            },
+            "risks": {
+              "type": "integer"
+            },
+            "validated": {
+              "type": "integer"
+            },
+            "maturity_percentage": {
+              "type": "number"
+            },
+            "maturity_level": {
+              "type": "string",
+              "enum": [
+                "insufficient",
+                "partial",
+                "sufficient",
+                "strong"
+              ]
+            },
+            "critical_impact_items": {
+              "type": "integer"
+            },
+            "high_impact_items": {
+              "type": "integer"
+            },
+            "highest_risk_item_id": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "artifact_status": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "enum": [
+          "not_started",
+          "in_progress",
+          "ready_for_review",
+          "accepted"
+        ]
+      }
+    },
+    "decision_log": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "date",
+          "decision",
+          "rationale",
+          "status"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "date": {
+            "type": "string"
+          },
+          "decision": {
+            "type": "string"
+          },
+          "rationale": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "accepted",
+              "candidate",
+              "deferred"
+            ]
+          }
+        }
+      }
+    },
+    "skipped_stages": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "examples": [
+    {
+      "version": "0.4.0-rc.4",
+      "last_updated": "2026-06-03T00:00:00Z",
+      "workflow_state": {
+        "current_stage": "Planning Artifacts",
+        "current_goal": "Prepare a PRD outline.",
+        "allowed_output_mode": "outline",
+        "depth_mode": "standard",
+        "quick_mode_entry_stage": null,
+        "do_not_cross": "Do not finalize artifacts without audit."
+      },
+      "evidence_snapshot": {
+        "items": [],
+        "summary": {
+          "total": 0,
+          "facts": 0,
+          "assumptions": 0,
+          "unknowns": 0,
+          "risks": 0,
+          "validated": 0,
+          "maturity_percentage": 0,
+          "maturity_level": "insufficient",
+          "critical_impact_items": 0,
+          "high_impact_items": 0,
+          "highest_risk_item_id": null
+        }
+      },
+      "artifact_status": {
+        "research": "accepted",
+        "prd": "ready_for_review",
+        "roadmap": "not_started",
+        "adr": "not_started",
+        "implementation_plan": "not_started"
+      },
+      "decision_log": [],
+      "skipped_stages": []
+    }
+  ]
+}

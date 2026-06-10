@@ -2,6 +2,25 @@
 
 This compact protocol is intended for quick loading from `agents/`. The full protocol lives in `../references/multi-agent-orchestration.md`.
 
+## Strict Contracts
+
+Markdown packets are the readable protocol. JSON Schemas in `../evals/` are the strict validation layer for release checks and future runtime adapters:
+
+- `agent-work-order.schema.json`
+- `agent-return-packet.schema.json`
+- `audit-report.schema.json`
+- `workbench.schema.json`
+- `pattern-index.schema.json`
+- `controller-actions.json`
+
+The Controller remains the only routing authority. Producers do not hand off to other Producers or accept their own output. The Auditor does not rewrite artifacts as a Producer.
+
+## Controller Actions
+
+Controller action names are defined in `../evals/controller-actions.json`. Do not keep a separate action enum in compact docs, schemas, or scripts.
+
+`ready_for_review` routes to audit or controller-documented review. `ready_for_next_stage` may proceed only after audit/review and required user gates. `needs_more_evidence`, `needs_main_skill_decision`, and `blocked` cannot be converted into final artifacts.
+
 ## Agent Work Order
 
 The Controller must send a strict work order before routing to any Producer.
@@ -10,7 +29,7 @@ The Controller must send a strict work order before routing to any Producer.
 # Agent Work Order
 
 ## Role
-Research / PRD / Roadmap / ADR / Implementation Plan
+Research / PRD / Roadmap / ADR / Implementation Plan / Execution Bridge / Artifact Export / Revision Trace / Review
 
 ## Mission
 This turn's single bounded job.
@@ -71,7 +90,7 @@ Conflicts with existing artifacts, assumptions, constraints, or decisions.
 Producer's own boundary, evidence, and completeness check.
 
 ## Recommended Controller Action
-Accept, downgrade, request evidence, route to audit, ask the user one question, or stop.
+One action from `../evals/controller-actions.json`.
 ```
 
 ## Runtime Workbench
@@ -154,4 +173,3 @@ Proceed, downgrade, ask for evidence, reroute, escalate to ADR, or stop.
 ```
 
 Do not expose auditor chain-of-thought. Do not let the auditor rewrite producer artifacts as if it were the producer.
-

@@ -1,0 +1,279 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Z2O Revision Record",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "package_version",
+    "revision_id",
+    "project_slug",
+    "created_at",
+    "source_stage",
+    "controller_decision",
+    "change_reason_status",
+    "change_reason",
+    "previous_revision_id",
+    "baseline",
+    "changed_artifacts",
+    "artifacts",
+    "evidence_refs",
+    "decision_refs",
+    "audit_refs",
+    "prohibited_content"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "package_version": {
+      "type": "string",
+      "pattern": "^v[0-9]+\\.[0-9]+\\.[0-9]+(-rc\\.[0-9]+)?$"
+    },
+    "revision_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "project_slug": {
+      "type": "string",
+      "minLength": 1
+    },
+    "created_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_stage": {
+      "type": "string"
+    },
+    "controller_decision": {
+      "type": "string",
+      "enum": [
+        "accept",
+        "downgrade",
+        "request_evidence",
+        "route_to_audit",
+        "ask_user",
+        "block",
+        "reroute",
+        "escalate_to_adr",
+        "stop"
+      ]
+    },
+    "change_reason_status": {
+      "type": "string",
+      "enum": [
+        "provided",
+        "missing"
+      ]
+    },
+    "change_reason": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "previous_revision_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "baseline": {
+      "type": "boolean"
+    },
+    "changed_artifacts": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "prd",
+          "roadmap",
+          "user-stories",
+          "implementation-plan"
+        ]
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/artifact_revision"
+      }
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "decision_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "audit_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "prohibited_content": {
+      "type": "object",
+      "required": [
+        "full_transcript",
+        "full_agent_packets",
+        "full_audit_reports",
+        "hidden_reasoning"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "full_transcript": {
+          "type": "boolean",
+          "const": false
+        },
+        "full_agent_packets": {
+          "type": "boolean",
+          "const": false
+        },
+        "full_audit_reports": {
+          "type": "boolean",
+          "const": false
+        },
+        "hidden_reasoning": {
+          "type": "boolean",
+          "const": false
+        }
+      }
+    }
+  },
+  "$defs": {
+    "artifact_revision": {
+      "type": "object",
+      "required": [
+        "artifact_name",
+        "current_path",
+        "current_exists",
+        "current_content_hash",
+        "previous_content_hash",
+        "changed",
+        "diff_path",
+        "section_summary"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "artifact_name": {
+          "type": "string",
+          "enum": [
+            "prd",
+            "roadmap",
+            "user-stories",
+            "implementation-plan"
+          ]
+        },
+        "current_path": {
+          "type": "string"
+        },
+        "current_exists": {
+          "type": "boolean"
+        },
+        "current_content_hash": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "previous_content_hash": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "changed": {
+          "type": "boolean"
+        },
+        "diff_path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "section_summary": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "heading",
+              "change_type"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "heading": {
+                "type": "string"
+              },
+              "change_type": {
+                "type": "string",
+                "enum": [
+                  "added",
+                  "removed",
+                  "unchanged",
+                  "modified"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "schema_version": "0.1.0",
+      "package_version": "v0.4.0-rc.4",
+      "revision_id": "rev-20260603T000000Z",
+      "project_slug": "sample-project",
+      "created_at": "2026-06-03T00:00:00Z",
+      "source_stage": "Planning Artifacts",
+      "controller_decision": "accept",
+      "change_reason_status": "provided",
+      "change_reason": "MVP scope narrowed after evidence review.",
+      "previous_revision_id": null,
+      "baseline": true,
+      "changed_artifacts": [
+        "prd"
+      ],
+      "artifacts": [
+        {
+          "artifact_name": "prd",
+          "current_path": "prd.md",
+          "current_exists": true,
+          "current_content_hash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "previous_content_hash": null,
+          "changed": true,
+          "diff_path": null,
+          "section_summary": [
+            {
+              "heading": "MVP Scope",
+              "change_type": "added"
+            }
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "ev-001"
+      ],
+      "decision_refs": [
+        "decision-003"
+      ],
+      "audit_refs": [
+        "audit-002"
+      ],
+      "prohibited_content": {
+        "full_transcript": false,
+        "full_agent_packets": false,
+        "full_audit_reports": false,
+        "hidden_reasoning": false
+      }
+    }
+  ]
+}

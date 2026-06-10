@@ -102,6 +102,9 @@ For Producer Agent routes, also include the Agent Return Packet fields: status, 
 | Mermaid | Known entities, flows, dependencies, or decisions need visualization | pm-skills Mermaid; local diagram rules | Assumption-labeled sketch only | `needs_more_evidence` |
 | Implementation Plan | Product and design artifacts are confirmed | Addy planning/task breakdown; superpowers writing-plans | Planning readiness review | `blocked` or `ready_for_next_stage` |
 | Review | Artifact or plan needs quality gate | Addy review/verification; Dean PM critique | Review findings with blockers | `needs_main_skill_decision` |
+| Execution Bridge | Review-ready Implementation Plan exists and user requests execution handoff | Local host-handoff contract; GitHub/Claude/Jira conventions | Gap report if Implementation Plan is incomplete | `ready_for_next_stage` or `blocked` |
+| Artifact Export | Accepted or review-ready artifacts exist and user requests stable files, delivery package, or File Workbench export | Local export contract and Artifact Manifest schema | Fixed files with `NOT_READY` blockers | `ready_for_next_stage` or `blocked` |
+| Revision Trace | Stable artifacts have been exported and user requests artifact diff or revision ledger | Local revision-ledger contract and Revision schemas | Baseline revision or metadata gap report | `ready_for_next_stage` or `needs_main_skill_decision` |
 
 ## Active Adapter Locations
 
@@ -117,6 +120,9 @@ For Producer Agent routes, also include the Agent Return Packet fields: status, 
 | Implementation Plan | `child-skills/implementation-plan/ADAPTER.md` | `vendor/agent-skills/skills/planning-and-task-breakdown/`; `vendor/awesome-copilot/index/create-implementation-plan.UPSTREAM_SKILL.md` |
 | Review | `child-skills/review/ADAPTER.md` | `vendor/agent-skills/skills/code-review-and-quality/`; `vendor/agent-skills/skills/test-driven-development/` |
 | Context Handoff | `child-skills/context-handoff/ADAPTER.md` | `vendor/agent-skills/skills/context-engineering/` |
+| Execution Bridge | `child-skills/execution-bridge/ADAPTER.md` | 本地新建；无外部 vendored source |
+| Artifact Export | `child-skills/artifact-export/ADAPTER.md` | 本地新建；无外部 vendored source |
+| Revision Trace | `child-skills/revision-trace/ADAPTER.md` | 本地新建；无外部 vendored source |
 
 ## Capability Contracts
 
@@ -134,7 +140,7 @@ Route to final PRD only after the main skill has grounded the problem definition
 
 If any prerequisite is missing, the child skill returns a PRD outline, a missing-evidence list, and the highest-leverage blocking question for the current turn. It must not create backlog detail, implementation tasks, or final requirements from assumptions.
 
-As a Producer Agent, PRD must self-check whether every requirement is labeled as confirmed, assumption, or unknown before recommending audit or acceptance.
+As a Producer Agent, PRD must self-check whether every requirement is labeled as confirmed, assumption, or unknown before recommending audit or acceptance. PRD output includes a Risk Map (assumptions sorted by impact) and Readiness Spectrum (readiness score with gap analysis). For detailed output contracts, see `child-skills/prd/ADAPTER.md`.
 
 ### Roadmap
 
@@ -191,6 +197,48 @@ Route when a major artifact, implementation plan, or release candidate needs cri
 The child skill should review from product/value, user experience, open-source maintainer, engineering, testing, and long-term architecture perspectives as relevant. Findings must lead, blockers must be explicit, and stylistic preferences must not be treated as blockers.
 
 Review can act as the Auditor Agent, but it must report through the Audit Report shape and must not become a second producer for the same artifact.
+
+### Execution Bridge
+
+Route after Implementation Planning produces a review-ready Implementation Plan and the user requests execution handoff (e.g., "转为 GitHub Issues", "生成 Claude Code tasks", "导出 Jira tickets").
+
+The child skill converts Implementation Plan tasks into the requested target format while preserving evidence labels, acceptance criteria, and verification commands. It does not modify the Implementation Plan content — it transcodes and restructures only.
+
+For GitHub Issues, Execution Bridge produces a host-executable dry-run handoff: `github-issues.md`, `github-issues.json`, issue body files, labels, optional assignee/milestone/project fields, suggested `gh issue create` commands, and a host execution checklist. Z2O does not execute GitHub API calls, Jira API calls, telemetry, analytics, or `gh issue create`.
+
+If the Implementation Plan has gaps (missing acceptance criteria, missing verification commands, unclear task boundaries), the child skill returns a gap report with `needs_more_evidence` rather than filling gaps with assumptions.
+
+As a Producer Agent, Execution Bridge must report the number of tasks converted, evidence distribution (fact-grounded vs assumption-labeled), handoff mode (`dry_run` or `host_executed`), external refs if separately approved and executed by the host agent, and any gaps found during conversion.
+
+Execution Bridge cannot be used to bypass the Implementation Planning stage. It only accepts review-ready Implementation Plans as input.
+
+### Artifact Export
+
+Route when the user asks "导出产物", "export artifacts", "生成交付文件", "工作台", or "导出工作台".
+
+Artifact Export writes or prepares a stable file package under `z2o-artifacts/<project-slug>/` in the caller's project workspace. It must include fixed paths for PRD, Roadmap, User Stories, Implementation Plan, File Workbench views, Execution Bridge handoff files, and `manifest.json`.
+
+Missing or unready artifacts keep their file path but contain only `NOT_READY`, status, blocker, required input, and Controller decision. Artifact Export must not invent missing artifact content, evidence, execution tasks, or external refs.
+
+The manifest must record `source_status`, `content_mode`, and `status_guard` for every artifact entry. If artifact status and content readiness disagree, Artifact Export must use `NOT_READY` or `blocked_status_content_mismatch` rather than exporting misleading accepted content.
+
+If a Quick Mode draft is exported before Standard Exploration validates it, the file must keep a top `QUICK_MODE_DRAFT` marker and the manifest entry must use `content_mode: quick_mode_draft` with `status_guard: quick_mode_banner_required`. Preserve `[Fact]`, `[Assumption]`, and `[Unknown]` labels.
+
+The manifest must follow `evals/artifact-manifest.schema.json`. The GitHub Issues handoff must follow `evals/execution-handoff.schema.json` when present.
+
+Artifact Export cannot write runtime state into the installed skill package and cannot include `.z2o-state/`, `.z2o-patterns/`, `z2o-artifacts/`, or eval-run archives in the installable zip.
+
+### Revision Trace
+
+Route when stable artifacts have been exported and the user asks "生成 revision trace", "artifact diff", "产物变更记录", or "产物版本记录".
+
+Revision Trace creates a bounded ledger under `z2o-artifacts/<project-slug>/revisions/` with `revision-index.json`, `revision-log.md`, one JSON record per revision, and per-artifact unified diff files. It compares only `prd.md`, `roadmap.md`, `user-stories.md`, and `implementation-plan.md`.
+
+Revision Trace may record artifact hashes, changed artifact names, mechanical Markdown heading summaries, Controller decision, Controller-supplied change reason, evidence refs, decision refs, and audit refs. If Controller metadata is missing, it must mark `change_reason_status: missing` and must not infer product rationale from the diff.
+
+Revision Trace must not store full transcripts, raw prompt history, hidden reasoning, full Agent Work Orders, full Agent Return Packets, full Audit Reports, or long history. It must not place history inside Runtime Workbench, use revision count as readiness/evidence maturity, or replace stable artifact files with `prd-v1.md`, `prd-v2.md`, or `final-final.md`.
+
+Use `scripts/generate_revision_trace.py` for deterministic file generation when the host agent can write files. The generated records must conform to `evals/revision-index.schema.json` and `evals/revision-record.schema.json`.
 
 ## Heavy Advisor Orchestration
 

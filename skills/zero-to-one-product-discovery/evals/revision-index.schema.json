@@ -1,0 +1,183 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Z2O Revision Index",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "package_version",
+    "project_slug",
+    "generated_at",
+    "export_root",
+    "latest_revision_id",
+    "latest_revision_record",
+    "trace_store",
+    "artifacts",
+    "records"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "package_version": {
+      "type": "string",
+      "pattern": "^v[0-9]+\\.[0-9]+\\.[0-9]+(-rc\\.[0-9]+)?$"
+    },
+    "project_slug": {
+      "type": "string",
+      "minLength": 1
+    },
+    "generated_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "export_root": {
+      "type": "string",
+      "minLength": 1
+    },
+    "latest_revision_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "latest_revision_record": {
+      "type": "string",
+      "minLength": 1
+    },
+    "trace_store": {
+      "type": "object",
+      "required": [
+        "mode",
+        "ref"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "skill_native_bounded",
+            "external_runtime"
+          ]
+        },
+        "ref": {
+          "type": "string"
+        }
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/artifact_index_entry"
+      }
+    },
+    "records": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "revision_id",
+          "record_path",
+          "created_at",
+          "changed_artifacts"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "revision_id": {
+            "type": "string"
+          },
+          "record_path": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "changed_artifacts": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "artifact_index_entry": {
+      "type": "object",
+      "required": [
+        "artifact_name",
+        "current_path",
+        "current_revision_id",
+        "current_content_hash",
+        "revision_count",
+        "changed_in_latest_revision"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "artifact_name": {
+          "type": "string",
+          "enum": [
+            "prd",
+            "roadmap",
+            "user-stories",
+            "implementation-plan"
+          ]
+        },
+        "current_path": {
+          "type": "string"
+        },
+        "current_revision_id": {
+          "type": "string"
+        },
+        "current_content_hash": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "revision_count": {
+          "type": "integer"
+        },
+        "changed_in_latest_revision": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "schema_version": "0.1.0",
+      "package_version": "v0.4.0-rc.4",
+      "project_slug": "sample-project",
+      "generated_at": "2026-06-03T00:00:00Z",
+      "export_root": "z2o-artifacts/sample-project",
+      "latest_revision_id": "rev-20260603T000000Z",
+      "latest_revision_record": "revisions/records/rev-20260603T000000Z.json",
+      "trace_store": {
+        "mode": "skill_native_bounded",
+        "ref": "revisions/"
+      },
+      "artifacts": [
+        {
+          "artifact_name": "prd",
+          "current_path": "prd.md",
+          "current_revision_id": "rev-20260603T000000Z",
+          "current_content_hash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "revision_count": 1,
+          "changed_in_latest_revision": true
+        }
+      ],
+      "records": [
+        {
+          "revision_id": "rev-20260603T000000Z",
+          "record_path": "revisions/records/rev-20260603T000000Z.json",
+          "created_at": "2026-06-03T00:00:00Z",
+          "changed_artifacts": [
+            "prd"
+          ]
+        }
+      ]
+    }
+  ]
+}

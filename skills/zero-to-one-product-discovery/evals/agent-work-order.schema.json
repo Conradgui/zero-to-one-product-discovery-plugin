@@ -1,0 +1,287 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Z2O Agent Work Order",
+  "type": "object",
+  "required": [
+    "role",
+    "mission",
+    "current_workflow_state",
+    "input_context",
+    "boundaries",
+    "required_output",
+    "stop_conditions",
+    "return_format"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "role": {
+      "type": "string",
+      "enum": [
+        "Research",
+        "PRD",
+        "Roadmap",
+        "ADR",
+        "Implementation Plan",
+        "Execution Bridge",
+        "Artifact Export",
+        "Revision Trace",
+        "Review"
+      ]
+    },
+    "mission": {
+      "type": "string",
+      "minLength": 1
+    },
+    "current_workflow_state": {
+      "type": "object",
+      "required": [
+        "current_stage",
+        "current_goal",
+        "allowed_output_mode",
+        "do_not_cross"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "current_stage": {
+          "type": "string",
+          "enum": [
+            "Diagnostic Start",
+            "Material Assimilation",
+            "Problem Framing",
+            "Solution Exploration",
+            "Feasibility Discovery",
+            "MVP Hypothesis",
+            "Planning Artifacts",
+            "Implementation Planning"
+          ]
+        },
+        "current_goal": {
+          "type": "string",
+          "minLength": 1
+        },
+        "allowed_output_mode": {
+          "type": "string",
+          "enum": [
+            "outline",
+            "decision_surface",
+            "final",
+            "review",
+            "blocking_question",
+            "quick_mode_draft"
+          ]
+        },
+        "depth_mode": {
+          "type": "string",
+          "enum": [
+            "diagnostic",
+            "standard",
+            "heavy_advisor",
+            "quick"
+          ]
+        },
+        "do_not_cross": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "input_context": {
+      "type": "object",
+      "required": [
+        "confirmed_facts",
+        "working_assumptions",
+        "unknowns",
+        "risks",
+        "relevant_decisions"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "confirmed_facts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "working_assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unknowns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "relevant_decisions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "boundaries": {
+      "type": "object",
+      "required": [
+        "must_not",
+        "out_of_scope",
+        "do_not_decide"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "must_not": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "out_of_scope": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "do_not_decide": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "required_output": {
+      "type": "object",
+      "required": [
+        "artifact_type",
+        "required_sections",
+        "evidence_labels_required",
+        "self_check_required",
+        "output_mode"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "artifact_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "required_sections": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "evidence_labels_required": {
+          "type": "boolean"
+        },
+        "self_check_required": {
+          "type": "boolean"
+        },
+        "output_mode": {
+          "type": "string",
+          "enum": [
+            "outline",
+            "decision_surface",
+            "final",
+            "review",
+            "blocking_question",
+            "quick_mode_draft"
+          ]
+        }
+      }
+    },
+    "stop_conditions": {
+      "type": "object",
+      "required": [
+        "needs_more_evidence",
+        "needs_main_skill_decision",
+        "blocked"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "needs_more_evidence": {
+          "type": "string",
+          "minLength": 1
+        },
+        "needs_main_skill_decision": {
+          "type": "string",
+          "minLength": 1
+        },
+        "blocked": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "return_format": {
+      "type": "string",
+      "const": "Agent Return Packet"
+    }
+  },
+  "examples": [
+    {
+      "role": "PRD",
+      "mission": "Create a grounded PRD outline from accepted discovery evidence.",
+      "current_workflow_state": {
+        "current_stage": "Planning Artifacts",
+        "current_goal": "Assess whether a PRD draft is allowed.",
+        "allowed_output_mode": "outline",
+        "depth_mode": "standard",
+        "do_not_cross": "Do not create implementation tasks or final requirements from assumptions."
+      },
+      "input_context": {
+        "confirmed_facts": [
+          "The user has accepted the problem framing."
+        ],
+        "working_assumptions": [
+          "The initial MVP slice is still assumption-labeled."
+        ],
+        "unknowns": [
+          "Success and failure indicators are missing."
+        ],
+        "risks": [
+          "A PRD could harden an unvalidated MVP scope."
+        ],
+        "relevant_decisions": [
+          "Use outline mode until success indicators are grounded."
+        ]
+      },
+      "boundaries": {
+        "must_not": [
+          "Do not produce a final PRD."
+        ],
+        "out_of_scope": [
+          "Roadmap dates and implementation tasks."
+        ],
+        "do_not_decide": [
+          "Whether the user accepts the MVP scope."
+        ]
+      },
+      "required_output": {
+        "artifact_type": "PRD outline",
+        "required_sections": [
+          "Evidence labels",
+          "Missing inputs",
+          "Readiness signal"
+        ],
+        "evidence_labels_required": true,
+        "self_check_required": true,
+        "output_mode": "outline"
+      },
+      "stop_conditions": {
+        "needs_more_evidence": "Success indicators remain missing.",
+        "needs_main_skill_decision": "The output requires selecting one MVP option.",
+        "blocked": "The artifact would require invented requirements."
+      },
+      "return_format": "Agent Return Packet"
+    }
+  ]
+}

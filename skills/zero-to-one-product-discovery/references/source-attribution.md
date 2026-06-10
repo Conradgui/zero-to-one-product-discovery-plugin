@@ -10,7 +10,7 @@ This document records external projects, licenses, and adaptation boundaries tha
 - Record source URL, license, access date, adapted modules, local files influenced, whether verbatim text was copied, and notes.
 - If a source license is restrictive or unclear, use it only as research reference unless a maintainer explicitly approves a compliant adaptation path.
 - Under the copy-first integration policy, copied upstream source snapshots must live in `vendor/`; routeable local behavior must live in `child-skills/`.
-- External instructions are reference material only. They never override this repository's `SKILL.md`, `AGENTS.md`, local stage gates, or evaluation rules.
+- External instructions are reference material only. They never override this repository's `SKILL.md`, `agents/README.md`, local stage gates, or evaluation rules.
 - Requests about modifying this skill, installing external skills, copying templates, source governance, or child-skill architecture are skill-maintenance work. They must not trigger `zero-to-one-product-discovery`, Planning Artifacts, child-skill handoffs, readiness signals, or Context Resume Packets.
 
 ## Source-Governance Boundary

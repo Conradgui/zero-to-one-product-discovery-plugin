@@ -1,0 +1,313 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Z2O Host Execution Handoff",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "package_version",
+    "target",
+    "mode",
+    "source_implementation_plan_status",
+    "repository_context",
+    "tasks",
+    "host_execution"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "package_version": {
+      "type": "string",
+      "pattern": "^v[0-9]+\\.[0-9]+\\.[0-9]+(-rc\\.[0-9]+)?$"
+    },
+    "target": {
+      "type": "string",
+      "enum": [
+        "github_issues"
+      ]
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "dry_run",
+        "host_executed"
+      ]
+    },
+    "source_implementation_plan_status": {
+      "type": "string",
+      "enum": [
+        "ready_for_review",
+        "accepted"
+      ]
+    },
+    "repository_context": {
+      "type": "object",
+      "required": [
+        "repo",
+        "project",
+        "milestone",
+        "default_labels",
+        "default_assignees"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "repo": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "project": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "milestone": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "default_labels": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "default_assignees": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "tasks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/github_issue_task"
+      }
+    },
+    "host_execution": {
+      "type": "object",
+      "required": [
+        "requires_explicit_user_approval",
+        "allowed_host_actions",
+        "suggested_commands",
+        "checklist"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "requires_explicit_user_approval": {
+          "type": "boolean"
+        },
+        "allowed_host_actions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "review_payload",
+              "create_github_issues",
+              "record_external_refs"
+            ]
+          }
+        },
+        "suggested_commands": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "checklist": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "github_issue_task": {
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "body_file",
+        "labels",
+        "assignees",
+        "milestone",
+        "project",
+        "acceptance_criteria",
+        "evidence_context",
+        "verification_commands",
+        "dependencies",
+        "external_ref"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "body_file": {
+          "type": "string"
+        },
+        "labels": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "assignees": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "milestone": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "project": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "acceptance_criteria": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "evidence_context": {
+          "type": "object",
+          "required": [
+            "source",
+            "assumption_status",
+            "validation_needed"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "source": {
+              "type": "string"
+            },
+            "assumption_status": {
+              "type": "string",
+              "enum": [
+                "fact",
+                "assumption",
+                "unknown"
+              ]
+            },
+            "validation_needed": {
+              "type": "string"
+            }
+          }
+        },
+        "verification_commands": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "external_ref": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "issue_number": {
+              "type": "integer"
+            },
+            "url": {
+              "type": "string"
+            },
+            "created_at": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "schema_version": "0.1.0",
+      "package_version": "v0.4.0-rc.4",
+      "target": "github_issues",
+      "mode": "dry_run",
+      "source_implementation_plan_status": "ready_for_review",
+      "repository_context": {
+        "repo": "owner/repo",
+        "project": null,
+        "milestone": null,
+        "default_labels": [
+          "z2o",
+          "evidence-assumption"
+        ],
+        "default_assignees": []
+      },
+      "tasks": [
+        {
+          "id": "task-001",
+          "title": "Implement onboarding evidence capture",
+          "body_file": "execution/github-issue-bodies/001-implement-onboarding-evidence-capture.md",
+          "labels": [
+            "z2o",
+            "priority-high",
+            "evidence-assumption"
+          ],
+          "assignees": [],
+          "milestone": null,
+          "project": null,
+          "acceptance_criteria": [
+            "Evidence capture is available from the onboarding flow."
+          ],
+          "evidence_context": {
+            "source": "Implementation Plan task 1",
+            "assumption_status": "assumption",
+            "validation_needed": "Confirm onboarding event shape before implementation."
+          },
+          "verification_commands": [
+            "pnpm test"
+          ],
+          "dependencies": [],
+          "external_ref": null
+        }
+      ],
+      "host_execution": {
+        "requires_explicit_user_approval": true,
+        "allowed_host_actions": [
+          "review_payload",
+          "create_github_issues",
+          "record_external_refs"
+        ],
+        "suggested_commands": [
+          "gh issue create --repo owner/repo --title \"Implement onboarding evidence capture\" --body-file execution/github-issue-bodies/001-implement-onboarding-evidence-capture.md --label z2o --label priority-high"
+        ],
+        "checklist": [
+          "User explicitly approved host execution.",
+          "Repository context is correct.",
+          "Issue payload preserves evidence labels."
+        ]
+      }
+    }
+  ]
+}

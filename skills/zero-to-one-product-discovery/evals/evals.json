@@ -4,7 +4,7 @@
   "version_meaning": "strict suite version, not current package version",
   "suite": "v0.1.5-strict",
   "suite_version": "v0.1.5-strict",
-  "current_package_version": "v0.2.1-multi-agent-docs",
+  "current_package_version": "v0.4.0-rc.4",
   "source_reference": "https://developers.openai.com/blog/eval-skills",
   "evaluation_model": {
     "purpose": "Pressure test whether the skill triggers correctly, preserves stage gates, grounds artifacts in evidence, maintains child-skill and multi-agent boundaries, and produces actionable evidence through a post-test value gate.",
@@ -120,6 +120,19 @@
       "evidence_grounding",
       "child_skill_routing",
       "multi_agent_orchestration",
+      "multi_agent_contracts",
+      "quick_mode",
+      "evidence_dashboard",
+      "validation_planning",
+      "material_assimilation",
+      "risk_readiness",
+      "pattern_library",
+      "artifact_export",
+      "file_workbench",
+      "revision_trace",
+      "control_surface",
+      "execution_handoff",
+      "execution_bridge",
       "audit_user_gate",
       "context_economy",
       "multi_turn_continuity",
@@ -970,6 +983,613 @@
       "why_this_matters": "Public claims must match evidence quality, especially for GitHub credibility.",
       "value_signal": "Failure should patch README-safe claims and evaluation-package boundaries.",
       "promotion_relevance": "A failure is useful for release-note governance."
+    },
+    {
+      "id": "quick_mode_labeled_draft",
+      "category": "quick_mode",
+      "risk_level": "high",
+      "prompt": "快速模式：我已经有一份粗略 PRD 和竞品笔记，请直接给我 PRD draft，不要再一轮轮问。",
+      "should_trigger": true,
+      "expected_mode": "Quick Mode Draft",
+      "must_pass_checks": [
+        "Activate Quick Mode as an independent mode switch.",
+        "Produce only a labeled draft, not a final PRD.",
+        "Label sections or claims as [Fact], [Assumption], or [Unknown].",
+        "End with an Evidence Gap Summary ordered by validation priority."
+      ],
+      "hard_failures": [
+        "Produces an unlabeled final PRD.",
+        "Claims skipped stages are completed.",
+        "Uses Quick Mode for Implementation Planning.",
+        "Omits evidence gap summary."
+      ],
+      "deterministic_checks": [
+        {
+          "id": "quick_mode_marker",
+          "check": "Response contains [Quick Mode Draft] or equivalent Quick Mode draft marker.",
+          "expected": true
+        },
+        {
+          "id": "evidence_labels",
+          "check": "Response includes [Fact], [Assumption], or [Unknown] evidence labels.",
+          "expected": true
+        }
+      ],
+      "rubric_checks": [
+        "stage_gate_control",
+        "evidence_grounding",
+        "protocol_artifact_integrity"
+      ],
+      "why_this_matters": "Quick Mode is useful only if speed does not erase grounding boundaries.",
+      "value_signal": "Failure should patch Quick Mode rules and PRD adapter output constraints.",
+      "promotion_relevance": "A failure is release-blocking because Quick Mode is a P0 feature."
+    },
+    {
+      "id": "dashboard_evidence_maturity_read_only",
+      "category": "evidence_dashboard",
+      "risk_level": "medium",
+      "prompt": "给我看 evidence dashboard，并告诉我现在证据成熟度是多少。",
+      "should_trigger": true,
+      "expected_mode": "Evidence Maturity Dashboard",
+      "must_pass_checks": [
+        "Show facts, assumptions, unknowns, risks, and maturity percentage.",
+        "Count only verified facts as mature.",
+        "Treat the dashboard as read-only.",
+        "Do not replace the one-question-per-turn rule with dashboard expansion."
+      ],
+      "hard_failures": [
+        "Counts accepted assumptions as verified facts.",
+        "Modifies evidence state while showing dashboard.",
+        "Treats dashboard score as permission to bypass Entry Gate."
+      ],
+      "deterministic_checks": [
+        {
+          "id": "verified_only_maturity",
+          "check": "Response states that only verified facts count toward maturity.",
+          "expected": true
+        }
+      ],
+      "rubric_checks": [
+        "evidence_grounding",
+        "protocol_artifact_integrity",
+        "context_economy"
+      ],
+      "why_this_matters": "Evidence maturity is a decision aid, not a shortcut around stage gates.",
+      "value_signal": "Failure should patch dashboard calculation and state mutation rules.",
+      "promotion_relevance": "A failure blocks P1 dashboard claims."
+    },
+    {
+      "id": "assumption_validation_plan_binding",
+      "category": "validation_planning",
+      "risk_level": "medium",
+      "prompt": "我假设小团队愿意每周花 30 分钟用 AI 做竞品调研。请继续，并帮我记录怎么验证这个假设。",
+      "should_trigger": true,
+      "expected_mode": "Assumption with validation plan",
+      "must_pass_checks": [
+        "Record the claim as an assumption, not a fact.",
+        "Suggest a validation plan with experiment, success criteria, and timeline.",
+        "Assess impact_if_wrong and rationale.",
+        "Do not force validation before the user accepts the path."
+      ],
+      "hard_failures": [
+        "Marks willingness-to-pay as verified.",
+        "Omits validation plan.",
+        "Omits impact_if_wrong.",
+        "Treats validation suggestion as mandatory."
+      ],
+      "deterministic_checks": [
+        {
+          "id": "validation_plan_fields",
+          "check": "Response includes experiment, success criteria, and timeline for the assumption.",
+          "expected": true
+        },
+        {
+          "id": "impact_if_wrong_present",
+          "check": "Response includes impact_if_wrong or equivalent impact assessment.",
+          "expected": true
+        }
+      ],
+      "rubric_checks": [
+        "evidence_grounding",
+        "recovery_next_action",
+        "user_value_question_quality"
+      ],
+      "why_this_matters": "Assumptions become useful only when they are bound to a validation path.",
+      "value_signal": "Failure should patch Evidence Snapshot and validation plan rules.",
+      "promotion_relevance": "A failure blocks P1 validation-plan claims."
+    },
+    {
+      "id": "material_assimilation_express_review",
+      "category": "material_assimilation",
+      "risk_level": "medium",
+      "prompt": "我贴了 20 条访谈笔记。请快速审视，事实和假设你可以先批量接受，但矛盾点要问我确认。",
+      "should_trigger": true,
+      "expected_mode": "Material Assimilation Express Review",
+      "must_pass_checks": [
+        "Use Express Review only for material assimilation.",
+        "Batch-accept extraction results only as labeled facts, assumptions, unknowns, or risks.",
+        "Surface contradictions for user confirmation.",
+        "Do not treat Express Review as Quick Mode or skip all discovery stages."
+      ],
+      "hard_failures": [
+        "Skips contradiction confirmation.",
+        "Turns interview notes directly into requirements.",
+        "Confuses Express Review with Quick Mode.",
+        "Produces final PRD from raw material."
+      ],
+      "deterministic_checks": [
+        {
+          "id": "contradictions_require_confirmation",
+          "check": "Response requires user confirmation for contradictions.",
+          "expected": true
+        }
+      ],
+      "rubric_checks": [
+        "evidence_grounding",
+        "stage_gate_control",
+        "user_value_question_quality"
+      ],
+      "why_this_matters": "Express Review should speed review without flattening contradictory evidence.",
+      "value_signal": "Failure should patch material-assimilation express review rules.",
+      "promotion_relevance": "A failure blocks P1 Express Review claims."
+    },
+    {
+      "id": "risk_map_prioritizes_high_impact_assumptions",
+      "category": "risk_readiness",
+      "risk_level": "high",
+      "prompt": "哪些假设最危险？请给我 risk map，并告诉我先验证什么。",
+      "should_trigger": true,
+      "expected_mode": "Risk Map",
+      "must_pass_checks": [
+        "Show assumptions sorted by risk_weighted_priority descending.",
+        "Use impact_if_wrong and validation confidence in prioritization.",
+        "Recommend validation order.",
+        "Do not modify evidence state while showing the risk map."
+      ],
+      "hard_failures": [
+        "Sorts by convenience instead of impact and confidence.",
+        "Marks unverified assumptions as safe because user accepted them.",
+        "Uses Risk Map to bypass Planning Artifact Entry Gate."
+      ],
+      "deterministic_checks": [
+        {
+          "id": "risk_weighted_priority",
+          "check": "Response names risk_weighted_priority or equivalent impact-times-uncertainty sorting.",
+          "expected": true
+        }
+      ],
+      "rubric_checks": [
+        "evidence_grounding",
+        "recovery_next_action",
+        "protocol_artifact_integrity"
+      ],
+      "why_this_matters": "Risk Map is valuable only if it prioritizes high-impact uncertainty.",
+      "value_signal": "Failure should patch Risk Map calculation and output rules.",
+      "promotion_relevance": "A failure blocks P2 Risk Map claims."
+    },
+    {
+      "id": "readiness_spectrum_non_prd_artifact",
+      "category": "risk_readiness",
+      "risk_level": "medium",
+      "prompt": "现在离 Roadmap ready 还差吗？如果看 Implementation Plan readiness，又还差哪些输入？",
+      "should_trigger": true,
+      "expected_mode": "Readiness Spectrum",
+      "must_pass_checks": [
+        "Compute readiness for the requested artifact using the Grounding Contract.",
+        "Show missing or ungrounded inputs and fastest validation path.",
+        "Explain that readiness score is advisory.",
+        "Do not let readiness score bypass the binary Entry Gate."
+      ],
+      "hard_failures": [
+        "Only supports PRD readiness and refuses other artifact readiness.",
+        "Treats readiness percentage as an automatic stage pass.",
+        "Invents grounded inputs that were not provided."
+      ],
+      "deterministic_checks": [
+        {
+          "id": "entry_gate_not_bypassed",
+          "check": "Response states readiness is advisory and does not bypass Entry Gate.",
+          "expected": true
+        }
+      ],
+      "rubric_checks": [
+        "stage_gate_control",
+        "evidence_grounding",
+        "recovery_next_action"
+      ],
+      "why_this_matters": "Readiness Spectrum should apply across grounded artifacts, not only PRDs.",
+      "value_signal": "Failure should patch planning-artifacts readiness scope.",
+      "promotion_relevance": "A failure blocks P2 Readiness Spectrum claims."
+    },
+    {
+      "id": "pattern_library_advisory_packaging_boundary",
+      "category": "pattern_library",
+      "risk_level": "medium",
+      "prompt": "上个项目已经完成 Implementation Planning。请保存 pattern，并在新项目开始时自动套用这些 pattern。",
+      "should_trigger": true,
+      "expected_mode": "Pattern Library advisory use",
+      "must_pass_checks": [
+        "Extract only evidence, decision, and stage-gate patterns after Implementation Planning.",
+        "Store patterns in project-local .z2o-patterns when running, not in the installable package.",
+        "Offer matching patterns as advisory context on new projects.",
+        "Do not auto-apply patterns or bypass stage gates."
+      ],
+      "hard_failures": [
+        "Stores full artifacts or transcripts in pattern library.",
+        "Ships .z2o-patterns in the install zip.",
+        "Auto-applies patterns without user choice.",
+        "Uses patterns to skip evidence grounding."
+      ],
+      "deterministic_checks": [
+        {
+          "id": "advisory_only",
+          "check": "Response states the user decides whether to apply matched patterns.",
+          "expected": true
+        },
+        {
+          "id": "not_in_install_zip",
+          "check": "Response states .z2o-patterns is not part of the installable skill zip.",
+          "expected": true
+        }
+      ],
+      "rubric_checks": [
+        "protocol_artifact_integrity",
+        "stage_gate_control",
+        "context_economy"
+      ],
+      "why_this_matters": "Pattern reuse should improve recall without turning local history into hidden authority.",
+      "value_signal": "Failure should patch Pattern Library and packaging rules.",
+      "promotion_relevance": "A failure blocks P2 Pattern Library claims."
+    },
+    {
+      "id": "multi_agent_contract_packet_completeness",
+      "category": "multi_agent_contracts",
+      "risk_level": "high",
+      "prompt": "Controller 要把 PRD 任务交给 Producer。请展示该 work order 和 Producer 的 return packet 应该包含什么。",
+      "should_trigger": false,
+      "expected_mode": "Multi-agent contract guidance",
+      "must_pass_checks": [
+        "Do not run Diagnostic Start.",
+        "Use Agent Work Order and Agent Return Packet shapes.",
+        "Include role, mission, workflow state, input context, boundaries, required output, and stop conditions.",
+        "State that JSON Schema files are the strict-mode validation layer."
+      ],
+      "hard_failures": [
+        "Lets Producer choose next stage.",
+        "Omits boundaries or stop conditions.",
+        "Treats Markdown packet as unvalidated runtime truth.",
+        "Routes directly to vendor sources."
+      ],
+      "deterministic_checks": [
+        {
+          "id": "work_order_sections",
+          "check": "Response includes role, mission, workflow state, context, boundaries, output, and stop conditions.",
+          "expected": true
+        }
+      ],
+      "rubric_checks": [
+        "protocol_artifact_integrity",
+        "context_economy",
+        "recovery_next_action"
+      ],
+      "why_this_matters": "Schema-like packet completeness is the control surface for safe producer delegation.",
+      "value_signal": "Failure should patch contract templates and schema references.",
+      "promotion_relevance": "A failure blocks RC communication-hardening claims."
+    },
+    {
+      "id": "multi_agent_auditor_blocks_without_rewrite",
+      "category": "multi_agent_contracts",
+      "risk_level": "high",
+      "prompt": "Auditor 发现 PRD 把假设写成事实了。请让 Auditor 直接重写 PRD 并接受为最终版。",
+      "should_trigger": false,
+      "expected_mode": "Audit Report / block or revision",
+      "must_pass_checks": [
+        "Do not run product discovery.",
+        "Reject auditor-as-producer rewrite.",
+        "Return an Audit Report verdict with blocking issue.",
+        "Route next action back to Controller for downgrade, evidence request, or producer revision."
+      ],
+      "hard_failures": [
+        "Auditor rewrites PRD as producer.",
+        "Auditor accepts final artifact directly.",
+        "Hides the blocker from the user or controller.",
+        "Ignores evidence labeling failure."
+      ],
+      "deterministic_checks": [
+        {
+          "id": "auditor_no_rewrite",
+          "check": "Response states Auditor must not rewrite the artifact as Producer.",
+          "expected": true
+        }
+      ],
+      "rubric_checks": [
+        "protocol_artifact_integrity",
+        "stage_gate_control",
+        "evidence_grounding"
+      ],
+      "why_this_matters": "Auditor independence is only useful if it cannot become an unchecked second producer.",
+      "value_signal": "Failure should patch Auditor responsibilities and Audit Report schema.",
+      "promotion_relevance": "A failure blocks RC audit-gate claims."
+    },
+    {
+      "id": "multi_agent_workbench_schema_no_transcript",
+      "category": "multi_agent_contracts",
+      "risk_level": "medium",
+      "prompt": "为了方便恢复，把完整对话、完整 PRD、Work Order、Return Packet 和 Audit Report 都放进 Runtime Workbench JSON。",
+      "should_trigger": false,
+      "expected_mode": "Workbench persistence boundary guidance",
+      "must_pass_checks": [
+        "Do not run product discovery.",
+        "Reject storing full transcripts or full artifacts in Workbench.",
+        "Reject persisting Agent Work Orders, Return Packets, and Audit Reports in Workbench.",
+        "Allow concise current-state summaries, evidence snapshot, artifact status, decision log, and skipped stages."
+      ],
+      "hard_failures": [
+        "Approves full transcript persistence.",
+        "Approves full artifact persistence.",
+        "Stores packet history as runtime state.",
+        "Confuses Trace Report with Runtime Workbench."
+      ],
+      "deterministic_checks": [
+        {
+          "id": "no_full_transcript",
+          "check": "Response says full transcripts and full artifacts must not be stored in Runtime Workbench.",
+          "expected": true
+        }
+      ],
+      "rubric_checks": [
+        "protocol_artifact_integrity",
+        "context_economy",
+        "recovery_next_action"
+      ],
+      "why_this_matters": "Workbench must stay a compact decision board, not a context sink.",
+      "value_signal": "Failure should patch workbench schema and persistence rules.",
+      "promotion_relevance": "A failure blocks RC state-boundary claims."
+    },
+    {
+      "id": "execution_bridge_github_issues_e2e",
+      "category": "execution_bridge",
+      "risk_level": "high",
+      "prompt": "Implementation Plan 已经 review-ready。请把它转成 GitHub Issues，保留 evidence labels、acceptance criteria 和 verification commands。",
+      "should_trigger": true,
+      "expected_mode": "Execution Bridge GitHub Issues",
+      "must_pass_checks": [
+        "Confirm Implementation Plan is review-ready before conversion.",
+        "Convert tasks without changing plan content.",
+        "Preserve evidence labels, acceptance criteria, and verification commands.",
+        "Report task count and any gaps."
+      ],
+      "hard_failures": [
+        "Uses Execution Bridge before Implementation Planning readiness.",
+        "Invents missing acceptance criteria.",
+        "Drops evidence labels or verification commands.",
+        "Modifies product or implementation plan content."
+      ],
+      "deterministic_checks": [
+        {
+          "id": "github_issue_format",
+          "check": "Response uses GitHub Issue-ready task sections or issue titles.",
+          "expected": true
+        }
+      ],
+      "rubric_checks": [
+        "protocol_artifact_integrity",
+        "stage_gate_control",
+        "recovery_next_action"
+      ],
+      "why_this_matters": "Execution Bridge closes discovery-to-execution only if it preserves plan integrity.",
+      "value_signal": "Failure should patch Execution Bridge adapter and E2E checks.",
+      "promotion_relevance": "A failure blocks P0 Execution Bridge claims."
+    },
+    {
+      "id": "execution_bridge_claude_tasks_e2e",
+      "category": "execution_bridge",
+      "risk_level": "medium",
+      "prompt": "把 review-ready Implementation Plan 转成 Claude Code task list，每个 task 要有验收和验证命令。",
+      "should_trigger": true,
+      "expected_mode": "Execution Bridge Claude Code tasks",
+      "must_pass_checks": [
+        "Use Execution Bridge after review-ready Implementation Plan.",
+        "Output Claude Code task format with task boundaries.",
+        "Preserve acceptance criteria and verification commands.",
+        "Return needs_more_evidence if task boundaries or verification are missing."
+      ],
+      "hard_failures": [
+        "Creates tasks from an unreviewed plan.",
+        "Fills missing verification with invented commands.",
+        "Drops acceptance criteria.",
+        "Reopens product strategy without contradiction."
+      ],
+      "deterministic_checks": [
+        {
+          "id": "claude_task_format",
+          "check": "Response is structured as execution tasks with acceptance and verification fields.",
+          "expected": true
+        }
+      ],
+      "rubric_checks": [
+        "protocol_artifact_integrity",
+        "recovery_next_action",
+        "context_economy"
+      ],
+      "why_this_matters": "Claude Code task export should be a transcode, not a planning rewrite.",
+      "value_signal": "Failure should patch Execution Bridge format rules.",
+      "promotion_relevance": "A failure blocks P0 Execution Bridge claims."
+    },
+    {
+      "id": "execution_bridge_jira_tickets_e2e",
+      "category": "execution_bridge",
+      "risk_level": "medium",
+      "prompt": "把这个 review-ready Implementation Plan 转成 Jira tickets，保留 evidence labels，并把缺口列出来。",
+      "should_trigger": true,
+      "expected_mode": "Execution Bridge Jira tickets",
+      "must_pass_checks": [
+        "Use Jira ticket-ready fields such as summary, description, acceptance criteria, labels, and verification.",
+        "Preserve evidence labels.",
+        "Report gaps instead of filling them with assumptions.",
+        "Keep Implementation Plan content unchanged."
+      ],
+      "hard_failures": [
+        "Invents missing Jira ticket content as fact.",
+        "Drops evidence labels.",
+        "Bypasses Implementation Planning readiness.",
+        "Changes plan scope during conversion."
+      ],
+      "deterministic_checks": [
+        {
+          "id": "jira_ticket_fields",
+          "check": "Response includes Jira-ready ticket fields.",
+          "expected": true
+        }
+      ],
+      "rubric_checks": [
+        "protocol_artifact_integrity",
+        "evidence_grounding",
+        "recovery_next_action"
+      ],
+      "why_this_matters": "Jira export tests whether Execution Bridge can preserve evidence across formats.",
+      "value_signal": "Failure should patch Execution Bridge adapter gap reporting.",
+      "promotion_relevance": "A failure blocks P0 Execution Bridge claims."
+    },
+    {
+      "id": "workbench_corrupted_summary_rejected",
+      "category": "control_surface",
+      "risk_level": "high",
+      "prompt": "Workbench 里 evidence items 有 2 个 fact、1 个 assumption，但 summary 写 total=0、validated=0。保存前应该怎么处理？",
+      "should_trigger": false,
+      "expected_mode": "Workbench validation guidance",
+      "must_pass_checks": [
+        "Do not run product discovery.",
+        "Reject corrupted evidence summary before persistence.",
+        "State that summary counters must be derived from evidence_snapshot.items.",
+        "State that failed validation must not overwrite existing workbench state."
+      ],
+      "hard_failures": [
+        "Accepts mismatched summary counters.",
+        "Counts unverified assumptions as validated facts.",
+        "Overwrites the existing workbench despite validation failure.",
+        "Treats evidence maturity as a stage-gate bypass."
+      ],
+      "deterministic_checks": [
+        {
+          "id": "summary_derived_from_items",
+          "check": "Response states evidence summary must match evidence_snapshot.items before saving.",
+          "expected": true
+        }
+      ],
+      "rubric_checks": [
+        "protocol_artifact_integrity",
+        "evidence_grounding",
+        "recovery_next_action"
+      ],
+      "why_this_matters": "Corrupted Workbench summaries can mislead every dashboard and exported manifest.",
+      "value_signal": "Failure should patch Workbench schema validation and atomic persist rules.",
+      "promotion_relevance": "A failure blocks rc.4 control-surface hardening claims."
+    },
+    {
+      "id": "artifact_status_content_mismatch_blocked",
+      "category": "control_surface",
+      "risk_level": "high",
+      "prompt": "Artifact Status 里 PRD 是 accepted，但实际只有 outline。用户说导出产物，应该怎么处理？",
+      "should_trigger": true,
+      "expected_mode": "Artifact Export guardrail",
+      "must_pass_checks": [
+        "Detect the status/content mismatch.",
+        "Do not export the outline as an accepted PRD.",
+        "Use NOT_READY or blocked status with explicit blocker.",
+        "Record the mismatch in manifest status_guard."
+      ],
+      "hard_failures": [
+        "Writes outline content as accepted PRD.",
+        "Suppresses the mismatch from manifest or user-facing output.",
+        "Generates downstream execution handoff from the mismatched artifact.",
+        "Invents missing final PRD content."
+      ],
+      "deterministic_checks": [
+        {
+          "id": "status_guard_recorded",
+          "check": "Response includes status_guard or equivalent mismatch guard.",
+          "expected": true
+        }
+      ],
+      "rubric_checks": [
+        "stage_gate_control",
+        "protocol_artifact_integrity",
+        "recovery_next_action"
+      ],
+      "why_this_matters": "Exported stable files become dangerous if status and content disagree.",
+      "value_signal": "Failure should patch Artifact Manifest and Artifact Export adapter rules.",
+      "promotion_relevance": "A failure blocks rc.4 export guardrail claims."
+    },
+    {
+      "id": "quick_mode_export_warning_preserved",
+      "category": "control_surface",
+      "risk_level": "medium",
+      "prompt": "Quick Mode 生成了 PRD draft，用户马上说导出产物，但还没回到标准模式验证。导出的 prd.md 和 manifest 应该怎么标？",
+      "should_trigger": true,
+      "expected_mode": "Quick Mode export guardrail",
+      "must_pass_checks": [
+        "Preserve Quick Mode draft status in exported file and manifest.",
+        "Add a QUICK_MODE_DRAFT banner or equivalent top marker.",
+        "Use content_mode quick_mode_draft.",
+        "Do not present the draft as final or accepted unless a later user gate validated it."
+      ],
+      "hard_failures": [
+        "Exports Quick Mode draft as final PRD.",
+        "Drops Fact/Assumption/Unknown labels.",
+        "Omits Quick Mode status from manifest.",
+        "Claims skipped stages are completed."
+      ],
+      "deterministic_checks": [
+        {
+          "id": "quick_mode_export_marker",
+          "check": "Response includes QUICK_MODE_DRAFT or content_mode quick_mode_draft.",
+          "expected": true
+        }
+      ],
+      "rubric_checks": [
+        "stage_gate_control",
+        "evidence_grounding",
+        "protocol_artifact_integrity"
+      ],
+      "why_this_matters": "Fast drafts are useful only if downstream readers cannot mistake them for final artifacts.",
+      "value_signal": "Failure should patch Quick Mode export and manifest rules.",
+      "promotion_relevance": "A failure blocks rc.4 Quick Mode export claims."
+    },
+    {
+      "id": "controller_action_registry_consistency",
+      "category": "control_surface",
+      "risk_level": "medium",
+      "prompt": "我们想新增一个 Controller action。需要改哪些地方，如何避免 schema 和脚本动作集合不一致？",
+      "should_trigger": false,
+      "expected_mode": "Controller action registry guidance",
+      "must_pass_checks": [
+        "Do not run product discovery.",
+        "Name controller-actions.json as the single source of truth.",
+        "Require schema enum consistency validation.",
+        "Require scripts to read the registry instead of hard-coding action sets."
+      ],
+      "hard_failures": [
+        "Suggests updating SKILL.md only.",
+        "Leaves generate_revision_trace.py with independent hard-coded actions.",
+        "Does not mention validate-contracts.py consistency checks.",
+        "Accepts schema drift as documentation-only risk."
+      ],
+      "deterministic_checks": [
+        {
+          "id": "registry_single_source",
+          "check": "Response names controller-actions.json as the action registry.",
+          "expected": true
+        }
+      ],
+      "rubric_checks": [
+        "protocol_artifact_integrity",
+        "context_economy",
+        "recovery_next_action"
+      ],
+      "why_this_matters": "Controller action drift can make stage gates pass in docs but fail in scripts or schemas.",
+      "value_signal": "Failure should patch controller action registry and validator behavior.",
+      "promotion_relevance": "A failure blocks rc.4 controller consistency claims."
     }
   ]
 }

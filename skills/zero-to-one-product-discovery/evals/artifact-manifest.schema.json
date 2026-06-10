@@ -1,0 +1,359 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Z2O Artifact Export Manifest",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "package_version",
+    "project_slug",
+    "export_generated_at",
+    "export_root",
+    "export_status",
+    "controller_decision",
+    "evidence_summary",
+    "artifacts",
+    "workbench_refs",
+    "execution_handoff_refs"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "package_version": {
+      "type": "string",
+      "pattern": "^v[0-9]+\\.[0-9]+\\.[0-9]+(-rc\\.[0-9]+)?$"
+    },
+    "project_slug": {
+      "type": "string",
+      "minLength": 1
+    },
+    "export_generated_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "export_root": {
+      "type": "string",
+      "minLength": 1
+    },
+    "export_status": {
+      "type": "string",
+      "enum": [
+        "ready",
+        "partial",
+        "blocked"
+      ]
+    },
+    "controller_decision": {
+      "type": "string",
+      "enum": [
+        "accept",
+        "downgrade",
+        "request_evidence",
+        "route_to_audit",
+        "ask_user",
+        "block",
+        "reroute",
+        "escalate_to_adr",
+        "stop"
+      ]
+    },
+    "evidence_summary": {
+      "type": "object",
+      "required": [
+        "total",
+        "facts",
+        "assumptions",
+        "unknowns",
+        "risks",
+        "validated",
+        "maturity_percentage",
+        "maturity_level"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "total": {
+          "type": "integer"
+        },
+        "facts": {
+          "type": "integer"
+        },
+        "assumptions": {
+          "type": "integer"
+        },
+        "unknowns": {
+          "type": "integer"
+        },
+        "risks": {
+          "type": "integer"
+        },
+        "validated": {
+          "type": "integer"
+        },
+        "maturity_percentage": {
+          "type": "number"
+        },
+        "maturity_level": {
+          "type": "string",
+          "enum": [
+            "insufficient",
+            "partial",
+            "sufficient",
+            "strong"
+          ]
+        }
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/artifact_entry"
+      }
+    },
+    "workbench_refs": {
+      "type": "object",
+      "required": [
+        "markdown",
+        "json",
+        "evidence_dashboard",
+        "risk_map",
+        "readiness_spectrum"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "markdown": {
+          "type": "string"
+        },
+        "json": {
+          "type": "string"
+        },
+        "evidence_dashboard": {
+          "type": "string"
+        },
+        "risk_map": {
+          "type": "string"
+        },
+        "readiness_spectrum": {
+          "type": "string"
+        }
+      }
+    },
+    "execution_handoff_refs": {
+      "type": "object",
+      "required": [
+        "github_issues_markdown",
+        "github_issues_json",
+        "issue_bodies_dir",
+        "host_execution_checklist"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "github_issues_markdown": {
+          "type": "string"
+        },
+        "github_issues_json": {
+          "type": "string"
+        },
+        "issue_bodies_dir": {
+          "type": "string"
+        },
+        "host_execution_checklist": {
+          "type": "string"
+        }
+      }
+    },
+    "revision_refs": {
+      "type": "object",
+      "required": [
+        "index_path",
+        "latest_revision_id",
+        "latest_revision_record",
+        "trace_store_ref"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "index_path": {
+          "type": "string"
+        },
+        "latest_revision_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "latest_revision_record": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "trace_store_ref": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "artifact_entry": {
+      "type": "object",
+      "required": [
+        "name",
+        "status",
+        "source_status",
+        "content_mode",
+        "status_guard",
+        "path",
+        "source_stage",
+        "blockers",
+        "required_inputs"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "enum": [
+            "prd",
+            "roadmap",
+            "user-stories",
+            "implementation-plan",
+            "workbench",
+            "execution-handoff",
+            "revision-ledger"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "not_started",
+            "in_progress",
+            "ready_for_review",
+            "accepted",
+            "not_ready"
+          ]
+        },
+        "source_status": {
+          "type": "string",
+          "enum": [
+            "not_started",
+            "in_progress",
+            "ready_for_review",
+            "accepted",
+            "quick_mode_draft",
+            "not_applicable"
+          ]
+        },
+        "content_mode": {
+          "type": "string",
+          "enum": [
+            "accepted_artifact",
+            "review_ready_artifact",
+            "quick_mode_draft",
+            "not_ready_marker",
+            "supporting_view",
+            "host_handoff",
+            "revision_record"
+          ]
+        },
+        "status_guard": {
+          "type": "string",
+          "enum": [
+            "status_matches_content",
+            "quick_mode_banner_required",
+            "not_ready_marker_only",
+            "supporting_view_only",
+            "host_handoff_only",
+            "revision_record_only",
+            "blocked_status_content_mismatch"
+          ]
+        },
+        "path": {
+          "type": "string"
+        },
+        "source_stage": {
+          "type": "string"
+        },
+        "blockers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "required_inputs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "schema_version": "0.1.0",
+      "package_version": "v0.4.0-rc.4",
+      "project_slug": "sample-project",
+      "export_generated_at": "2026-06-03T00:00:00Z",
+      "export_root": "z2o-artifacts/sample-project",
+      "export_status": "partial",
+      "controller_decision": "downgrade",
+      "evidence_summary": {
+        "total": 4,
+        "facts": 1,
+        "assumptions": 2,
+        "unknowns": 1,
+        "risks": 0,
+        "validated": 1,
+        "maturity_percentage": 25,
+        "maturity_level": "partial"
+      },
+      "artifacts": [
+        {
+          "name": "prd",
+          "status": "accepted",
+          "source_status": "accepted",
+          "content_mode": "accepted_artifact",
+          "status_guard": "status_matches_content",
+          "path": "prd.md",
+          "source_stage": "Planning Artifacts",
+          "blockers": [],
+          "required_inputs": []
+        },
+        {
+          "name": "implementation-plan",
+          "status": "not_ready",
+          "source_status": "not_started",
+          "content_mode": "not_ready_marker",
+          "status_guard": "not_ready_marker_only",
+          "path": "implementation-plan.md",
+          "source_stage": "Implementation Planning",
+          "blockers": [
+            "Implementation Plan is not review-ready."
+          ],
+          "required_inputs": [
+            "Accepted Roadmap and acceptance criteria."
+          ]
+        }
+      ],
+      "workbench_refs": {
+        "markdown": "workbench/workbench.md",
+        "json": "workbench/workbench.json",
+        "evidence_dashboard": "workbench/evidence-dashboard.md",
+        "risk_map": "workbench/risk-map.md",
+        "readiness_spectrum": "workbench/readiness-spectrum.md"
+      },
+      "execution_handoff_refs": {
+        "github_issues_markdown": "execution/github-issues.md",
+        "github_issues_json": "execution/github-issues.json",
+        "issue_bodies_dir": "execution/github-issue-bodies",
+        "host_execution_checklist": "execution/host-execution-checklist.md"
+      },
+      "revision_refs": {
+        "index_path": "revisions/revision-index.json",
+        "latest_revision_id": "rev-20260603T000000Z",
+        "latest_revision_record": "revisions/records/rev-20260603T000000Z.json",
+        "trace_store_ref": "revisions/"
+      }
+    }
+  ]
+}

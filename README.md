@@ -1,136 +1,269 @@
 # Zero-to-One Product Discovery Plugin
 
-`zero-to-one-product-discovery-plugin` 是 `zero-to-one-product-discovery`
-workflow skill 的 Codex plugin 分发包装层。
+A Codex plugin for early-stage product discovery with stage-gated workflow, multi-agent governance, evidence maturity tracking, artifact export, and revision trace.
 
-核心能力仍然来自 bundled skill。这个仓库只负责把该 skill 以 Codex plugin 的形式发布，提供
-manifest、安装边界、README、验证脚本和未来分发入口。它不是核心 skill 的替代仓库，也不应把
-plugin 分发层的约束反向污染核心 workflow 源仓库。
+## What It Does
 
-这个仓库解决的是产品化分发问题，而不是重新发明 workflow：当一个 AI discovery skill 从个人安装走向可被他人浏览、安装和复用时，最容易出错的地方不是多写一个功能，而是边界变得含糊。plugin 层把可安装入口、manifest metadata、runtime 包内容和验证脚本固定下来，让使用者看到的是一个清晰的 Codex plugin，而维护者仍然能把核心行为演进留在源 skill 仓库中。
+This plugin wraps the [`zero-to-one-product-discovery`](https://github.com/Conradgui/zero-to-one-product-discovery) workflow skill as a Codex plugin. It helps agents handle early product, open-source, side-project, and startup ideas through evidence-aware stage gates instead of prematurely producing PRDs, roadmaps, ADRs, or implementation plans.
 
-## 这个 Plugin 做什么
+Core workflow:
 
-这个 plugin 提供一个面向早期产品、开源项目、side project 和 startup idea 的分阶段 AI product
-discovery workflow。
+1. **Diagnostic Start** — evaluate the idea: facts, assumptions, risks, unknowns.
+2. **Material Assimilation** — absorb existing notes, PRDs, sketches, feedback, research.
+3. **Problem Framing** — define the problem space with grounded evidence.
+4. **Solution Exploration** — explore candidate solutions and trade-offs.
+5. **Feasibility Discovery** — assess technical and product feasibility.
+6. **MVP Hypothesis** — form a testable MVP hypothesis.
+7. **Planning Artifacts** — produce PRD, Roadmap, User Stories, ADRs (only when evidence is sufficient).
+8. **Implementation Planning** — engineering plan with verification strategy.
+9. **Artifact Export** — stable file package with manifest and readiness markers.
+10. **Revision Trace** — bounded artifact change ledger.
 
-它的重点不是快速生成 PRD、Roadmap、ADR 或 Implementation Plan，而是先让 AI assistant
-围绕问题、证据、假设、风险和 MVP hypothesis 做足 grounding，避免在信息不足时过早进入规划或编码。
+## Components
 
-对使用者来说，它提供的是一个更容易被 Codex 发现和触发的产品发现入口；对维护者来说，它是一层分发边界，明确哪些文件属于 runtime，哪些证据、zip 历史或临时产物不应该进入 plugin 包。
+### Skills
 
-workflow 支持：
+- `zero-to-one-product-discovery` — main workflow skill with stage gates, Quick Mode, Evidence Maturity Dashboard, Risk Map, Readiness Spectrum, Pattern Library, and Auto-Persist.
 
-- Diagnostic Start：处理非常模糊的 idea。
-- Material Assimilation：吸收已有 notes、PRD、sketches、feedback 或 research。
-- Problem Framing、Solution Exploration、Feasibility Discovery 和 MVP Hypothesis。
-- Planning Artifacts：只在 readiness gates 通过后生成。
-- Implementation Planning：只在 planning artifacts 达到 review-ready 后推进。
+### Child Skills (14 adapters)
 
-## 仓库边界
+| Child Skill | Purpose |
+|---|---|
+| `research-brief` | Synthesize interviews, feedback, competitors, notes |
+| `prd` | Produce PRD with Risk Map and Readiness Spectrum |
+| `roadmap` | Now/Next/Later roadmap with validation gates |
+| `user-stories` | User stories, story mapping, release slices |
+| `acceptance-criteria` | Acceptance criteria for confirmed requirements |
+| `adr-governance` | Decision Log vs ADR for durable technical decisions |
+| `mermaid` | Mermaid diagrams from known structure |
+| `implementation-plan` | Engineering plan from review-ready artifacts |
+| `review` | Multi-perspective artifact review |
+| `context-handoff` | Context Resume Packet for session continuity |
+| `execution-bridge` | Implementation Plan → GitHub Issues / Claude Code tasks / Jira tickets |
+| `artifact-export` | Stable file export with manifest and NOT_READY markers |
+| `revision-trace` | Bounded artifact revision ledger with hashes and diffs |
 
-这个仓库是 Plugin Lite 分发层：
+### Eval Schemas (19 contracts)
 
-```text
-Core workflow skill
-  -> installable skill package
-  -> plugin distribution wrapper
-  -> future MCP / UI / CLI extension, if needed
+JSON Schema contracts for Agent Work Order, Agent Return Packet, Audit Report, Runtime Workbench, Pattern Index, Artifact Manifest, Execution Handoff, Revision Index, Revision Record, eval reports, and Value Review.
+
+### Scripts
+
+| Script | Purpose |
+|---|---|
+| `persist_workbench.py` | Schema-validated atomic Workbench persistence |
+| `generate_revision_trace.py` | Deterministic revision ledger generation |
+| `validate-contracts.py` | Release-check contract and packaging validation |
+| `validate-plugin-package.py` | Plugin package structure and manifest validation |
+
+## Install
+
+### From Codex Plugin Directory
+
+Open Codex → Plugins → Browse → search for "Zero-to-One Product Discovery" → Install.
+
+### From Git Repository
+
+Add this repository as a Git-backed marketplace source:
+
+```json
+{
+  "name": "zero-to-one-product-discovery-plugin",
+  "source": {
+    "source": "git-subdir",
+    "url": "https://github.com/Conradgui/zero-to-one-product-discovery-plugin.git",
+    "path": "./",
+    "ref": "main"
+  },
+  "policy": {
+    "installation": "AVAILABLE",
+    "authentication": "ON_INSTALL"
+  },
+  "category": "Productivity"
+}
 ```
 
-bundled skill 位于：
+### Manual Local Install
 
-```text
-skills/zero-to-one-product-discovery/
+```bash
+# Clone the plugin
+git clone https://github.com/Conradgui/zero-to-one-product-discovery-plugin.git
+
+# Copy to Codex plugins directory
+mkdir -p ~/.codex/plugins
+cp -R zero-to-one-product-discovery-plugin ~/.codex/plugins/zero-to-one-product-discovery-plugin
 ```
 
-plugin manifest 位于：
+Restart Codex after installation.
 
-```text
-.codex-plugin/plugin.json
-```
+## Configure
 
-除非是在修复分发包复制错误，否则不要在这个仓库里改核心 workflow 行为。核心 skill 的演进应在核心项目中完成，再同步到本分发仓库。
+This plugin requires no external configuration, API keys, or environment variables. It operates entirely through the host agent's built-in file reading, search, and planning tools.
 
-## 不包含什么
+No MCP servers, App connectors, or Hooks are bundled.
 
-这个 plugin 有意不包含：
+## Use
 
-- `zero-to-one-product-discovery-eval-runs/`
-- `dist/` release zip history
-- 临时 publish directories
-- 历史 raw evaluation transcripts
-- MCP server configuration
-- app UI configuration
-- LangGraph 或 Python runtime
+### Basic Usage
 
-evaluation evidence 应继续保留在核心项目的 evidence archive 中。plugin runtime 应保持小而清晰。
-
-## 为什么是 Plugin Lite
-
-这个项目最初是 workflow skill，因为核心问题是行为治理：AI agent 什么时候应该提问、降级输出、切换阶段、审计或停止。
-
-plugin 层增加的是产品化分发能力：
-
-- plugin manifest；
-- 清晰的安装边界；
-- Codex plugin metadata；
-- package validation；
-- 为未来 MCP 或 UI 扩展预留空间。
-
-这里刻意保持 Plugin Lite，而不是直接加入 MCP server、app UI、LangGraph runtime 或额外 CLI。原因是当前产品风险不在“缺少更多界面”，而在“分发形态是否让边界更清楚”：plugin 应该让 skill 更容易安装和识别，但不应该把尚未验证的 runtime 能力包装成已经存在的产品能力。
-
-## Claim Boundary
-
-支持的 claim：
-
-- 这个 plugin 将一个已有、带 evidence 支撑的 workflow skill 打包为 Codex plugin 分发形态。
-
-不支持的 claim：
-
-- 它不是 production-grade validation。
-- 它不证明跨模型优越性。
-- 它没有新增 service runtime、MCP server 或 app UI。
-- 它不替代核心 `zero-to-one-product-discovery` 源仓库。
-
-## 安装和使用
-
-公开使用时，以 Codex app 的 Plugins 入口为准：在 Codex 左上角打开 Plugins，浏览或添加 plugin。当前 README 不写未经验证的 CLI 安装命令。
-
-安装后可以这样使用：
+After installation, trigger the skill naturally:
 
 ```text
 我有一个很模糊的开源产品想法。请使用 zero-to-one product discovery，不要急着写 PRD 或代码。
 ```
 
-或者：
+Or in English:
 
 ```text
-探索我的早期产品想法，先找出最有风险的假设，再讨论是否进入实现规划。
+Explore my early product idea without rushing into PRD.
 ```
 
-## 本地验证
+### Quick Mode
 
-运行自定义 package 验证：
+If you have sufficient materials (complete PRD draft, detailed notes, competitor analysis):
+
+```text
+我有一份详细的 PRD 草稿，直接进入快速模式帮我审查并补全。
+```
+
+### Evidence Dashboard
+
+View evidence verification progress:
+
+```text
+evidence dashboard
+给我看证据成熟度
+```
+
+### Risk Map
+
+See which assumptions are most dangerous:
+
+```text
+risk map
+哪些假设最危险
+```
+
+### Readiness Spectrum
+
+Check distance to PRD/roadmap readiness:
+
+```text
+readiness
+准备度
+还差多少
+```
+
+### Artifact Export
+
+Export stable artifact files:
+
+```text
+导出产物
+export artifacts
+```
+
+### Revision Trace
+
+Generate artifact change ledger:
+
+```text
+生成 revision trace
+产物变更记录
+```
+
+## Security
+
+### Read/Write Scope
+
+- **Read**: This plugin reads user-provided materials (notes, PRDs, sketches, feedback, research) through the host agent's file reading tools.
+- **Write**: This plugin may create files in the user's project workspace when exporting artifacts (`z2o-artifacts/`), persisting workbench state (`.z2o-state/`), or saving patterns (`.z2o-patterns/`).
+
+### No External Network Calls
+
+This plugin does not make external API calls, telemetry, analytics, or network requests. All processing is local through the host agent.
+
+### No Credentials
+
+This plugin does not require, store, or transmit API keys, tokens, or credentials.
+
+### Hook Safety
+
+No hooks are bundled. If hooks are added in the future, they will use `${PLUGIN_ROOT}` and `${PLUGIN_DATA}` for path resolution and will not perform silent network calls, install dependencies, or modify user files without explicit trust.
+
+### Artifact Boundaries
+
+- Exported artifacts with insufficient evidence are marked `NOT_READY`, not fabricated.
+- Quick Mode drafts retain `QUICK_MODE_DRAFT` markers and cannot be exported as final.
+- The Revision Trace stores only bounded metadata (hashes, diffs, section summaries), never full transcripts or hidden reasoning.
+
+## Troubleshooting
+
+### Skill not triggering
+
+- Ensure the plugin is installed and enabled in Codex → Plugins.
+- Restart Codex after installation.
+- Check that `skills/zero-to-one-product-discovery/SKILL.md` exists in the plugin directory.
+
+### Skill triggers but stages seem skipped
+
+- This is by design for Quick Mode. Say "回到标准模式" to return to interactive exploration.
+- If not in Quick Mode, the skill enforces stage gates — provide more evidence to proceed.
+
+### Artifact export produces NOT_READY files
+
+- This is expected when evidence is insufficient. Review the Evidence Maturity Dashboard (`evidence dashboard`) to see what's missing.
+- Provide additional materials or answer key questions to advance readiness.
+
+### Workbench state not persisting
+
+- Ensure the host agent has file write permissions.
+- Check that `.z2o-state/workbench.json` is not blocked by `.gitignore` or permissions.
+
+### Validation script fails
 
 ```bash
-python3 scripts/validate-plugin-package.py
+python scripts/validate-plugin-package.py
 ```
 
-运行 Codex plugin schema 验证：
+Common issues:
+- Missing `assets/icon.png` or `assets/logo.png`.
+- Invalid `plugin.json` structure.
+- Forbidden content detected (eval-runs, dist, publish directories).
 
-```bash
-python3 /Users/conrad/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py /Users/conrad/Desktop/zero-to-one-product-discovery-plugin
+## Repository Structure
+
+```text
+zero-to-one-product-discovery-plugin/
+├── .codex-plugin/
+│   └── plugin.json                          # Plugin manifest
+├── assets/
+│   ├── icon.png                             # Composer icon
+│   └── logo.png                             # Plugin logo
+├── scripts/
+│   ├── validate-plugin-package.py           # Plugin package validator
+│   └── generate_assets.py                   # Asset generation helper
+├── skills/
+│   └── zero-to-one-product-discovery/       # Bundled skill
+│       ├── SKILL.md                         # Main workflow
+│       ├── README.md                        # Skill documentation
+│       ├── agents/                          # Multi-agent protocol
+│       ├── child-skills/                    # 14 specialist adapters
+│       ├── references/                      # Workflow rules and protocols
+│       ├── evals/                           # 19 JSON Schema contracts
+│       ├── scripts/                         # Python helper scripts
+│       └── vendor/                          # Upstream source snapshots
+├── README.md                                # This file
+├── CHANGELOG.md                             # Version history
+└── LICENSE                                  # MIT License
 ```
 
-## 维护原则
+## Source Transparency
 
-- 保持小而可 review 的 diff。
-- plugin 分发层只维护 manifest、README、验证脚本、安装边界和未来分发元数据。
-- 不在这里新增 analytics、telemetry 或网络调用。
-- 不声明 `mcpServers`、`apps` 或 `hooks`，除非对应的配置和 runtime 真实存在。
-- 核心 workflow 行为变更应先在核心 skill 项目中完成，再同步到本仓库。
+The bundled skill originates from [`zero-to-one-product-discovery`](https://github.com/Conradgui/zero-to-one-product-discovery). This plugin repository is the distribution wrapper only. Core workflow behavior changes happen in the source repository first, then sync to this plugin.
+
+`vendor/` contains upstream source snapshots with mixed licenses (CC BY-NC-SA 4.0, Apache-2.0, MIT). See `vendor/MANIFEST.md` and `references/source-attribution.md` for details.
 
 ## License
 
-MIT
+MIT — see [LICENSE](LICENSE).

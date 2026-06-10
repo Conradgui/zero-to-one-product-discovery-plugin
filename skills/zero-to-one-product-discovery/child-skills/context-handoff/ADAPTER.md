@@ -13,10 +13,11 @@ Create a compact Context Resume Packet that lets the main workflow or another to
 
 - Current stage.
 - Confirmed facts.
-- Working assumptions.
+- Working assumptions with validation plans (if any).
 - Unresolved questions.
 - Decisions and trade-offs.
 - Risks and constraints.
+- Active validation plans.
 - Active artifact routes.
 - Next recommended main workflow action.
 
@@ -30,6 +31,8 @@ Create a compact Context Resume Packet that lets the main workflow or another to
 - Decision Log Candidates.
 - ADR Candidates.
 - Key Risks.
+- Assumption Validation Bindings: for each assumption with a validation plan (experiment, success criteria, timeline, status).
+- Evidence Maturity Summary: total items, facts count, assumptions count, unknowns count, risks count, validated count, maturity level, maturity percentage.
 - Readiness Signal.
 - Recommended Main Skill Action.
 

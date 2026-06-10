@@ -13,6 +13,8 @@ It does not define separately installable agents. The main `SKILL.md` remains th
 
 For the full reference, see `../references/multi-agent-orchestration.md`.
 
+Controller action names are defined in `../evals/controller-actions.json`; compact docs and scripts must not keep separate action enums.
+
 ## Role Model
 
 | Role | Responsibility | Must Not |
@@ -32,6 +34,9 @@ For the full reference, see `../references/multi-agent-orchestration.md`.
 | Roadmap | PRD or PRD outline is accepted enough to sequence validation or delivery. | Now/Next/Later, phases, milestones, validation gates. | Turn weak assumptions into delivery commitments. |
 | ADR | Durable architecture/platform/data/security/dependency decision appears. | Decision Log entry or ADR candidate. | Escalate ordinary scope tradeoffs into unnecessary ADRs. |
 | Implementation Plan | Planning artifacts and relevant technical decisions are review-ready. | Engineering plan, verification plan, sequencing, risks. | Start coding or scaffold repositories before readiness. |
+| Execution Bridge | Review-ready Implementation Plan exists and execution handoff is requested. | Host-executable dry-run handoff or target task format. | Create external issues/tickets directly or invent tasks. |
+| Artifact Export | Stable files, delivery package, or File Workbench export is requested. | Fixed artifact package with ready/not-ready markers and manifest guard fields. | Mark missing artifacts or Quick Mode drafts as final, or store full history in Workbench. |
+| Revision Trace | Stable artifacts have been exported and artifact diff/history is requested. | Bounded revision ledger with hashes, diffs, and Controller refs. | Store transcripts, hidden reasoning, or use revision count as maturity. |
 
 ## Execution Order
 
@@ -59,4 +64,4 @@ The Controller owns routing. Producers and auditors report findings; they do not
 - Do not store full transcripts or complete artifacts in Runtime Workbench.
 - Do not let producer agents call each other.
 - Do not accept substantial artifacts as final without controller review and, when needed, Audit Report.
-
+- Do not perform external side effects such as creating GitHub Issues or Jira tickets from Z2O itself; prepare host-executable handoff and require explicit user approval in the host agent.
